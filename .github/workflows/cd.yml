@@ -5,12 +5,13 @@ on:
     #tags:
     #  - "v*.*.*"
 
+env:
+  ROTEL_VERSION: "v0.0.2"
+
 jobs:
   publish-npm-binaries:
     name: Publish NPM packages
     runs-on: ${{ matrix.build.os }}
-    env:
-      ROTEL_VERSION: "v0.0.2"
     strategy:
       fail-fast: false
       matrix:
