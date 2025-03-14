@@ -20,21 +20,21 @@ jobs:
               OS: ubuntu-20.04,
               TOOLCHAIN: stable,
               TARGET: x86_64-unknown-linux-gnu,
-              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_x86_64-unknown-linux-gnu.tar.gz  
+              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_x86_64-unknown-linux-gnu.tar.gz,
             }
           - {
               NAME: linux-arm64-glibc,
               OS: ubuntu-20.04,
               TOOLCHAIN: stable,
               TARGET: aarch64-unknown-linux-gnu,
-              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_aarch64-unknown-linux-gnu.tar.gz 
+              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_aarch64-unknown-linux-gnu.tar.gz,
             }
           - {
               NAME: darwin-arm64,
               OS: macos-14,
               TOOLCHAIN: stable,
               TARGET: aarch64-apple-darwin,
-              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_aarch64-apple-darwin.tar.gz 
+              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_aarch64-apple-darwin.tar.gz,
             }
     steps:
       - name: Checkout
