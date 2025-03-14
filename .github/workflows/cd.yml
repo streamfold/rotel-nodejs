@@ -56,6 +56,6 @@ jobs:
         with:
           repo: 'streamfold/rotel'
           version: ${{env.ROTEL_VERSION}}
-          file: ${{ matrix.ARTIFACT}}
+          file: ${{ matrix.build.ARTIFACT}}
           token: ${{ secrets.AGENT_DOWNLOAD_TOKEN }}
 
