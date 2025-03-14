@@ -2,13 +2,15 @@ name: Continuous Deployment
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    #tags:
+    #  - "v*.*.*"
 
 jobs:
   publish-npm-binaries:
     name: Publish NPM packages
     runs-on: ${{ matrix.build.os }}
+    env:
+      ROTEL_VERSION: "v0.0.2"
     strategy:
       fail-fast: false
       matrix:
@@ -18,18 +20,21 @@ jobs:
               OS: ubuntu-20.04,
               TOOLCHAIN: stable,
               TARGET: x86_64-unknown-linux-gnu,
+              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_x86_64-unknown-linux-gnu.tar.gz  
             }
           - {
               NAME: linux-arm64-glibc,
               OS: ubuntu-20.04,
               TOOLCHAIN: stable,
               TARGET: aarch64-unknown-linux-gnu,
+              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_aarch64-unknown-linux-gnu.tar.gz 
             }
           - {
               NAME: darwin-arm64,
               OS: macos-14,
               TOOLCHAIN: stable,
               TARGET: aarch64-apple-darwin,
+              ARTIFACT: rotel_${{ env.ROTEL_VERSION }}_aarch64-apple-darwin.tar.gz 
             }
     steps:
       - name: Checkout
@@ -44,4 +49,12 @@ jobs:
         with:
           node-version: "16"
           registry-url: "https://registry.npmjs.org"
+
+      - name: Download Rotel
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: 'streamfold/rotel'
+          version: ${{env.ROTEL_VERSION}}
+          file: ${{ matrix.ARTIFACT}}
+          token: ${{ secrets.AGENT_DOWNLOAD_TOKEN }}
 
