@@ -47,7 +47,7 @@ jobs:
         if: matrix.build.os == 'ubuntu-20.04'
         run: |
           sudo apt-get update
-          apt-get upgrade curl
+          sudo apt-get upgrade curl
       - name: Set build env
         run: echo "BUILD_SHORT_SHA=$(echo -n $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
       - name: Set the release version
