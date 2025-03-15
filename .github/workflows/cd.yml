@@ -2,8 +2,8 @@ name: Continuous Deployment
 
 on:
   push:
-    #tags:
-    #  - "v*.*.*"
+    tags:
+      - "v*.*.*"
 
 env:
   ROTEL_VERSION: "tags/v0.0.2"
