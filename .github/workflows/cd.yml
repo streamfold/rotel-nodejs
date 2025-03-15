@@ -64,6 +64,9 @@ jobs:
         shell: bash
         run: |
           tar -O -zxf ${{matrix.build.ARTIFACT}}
+          tar -O -zxf ${{matrix.build.ARTIFACT}} rotel > rotel-agent
+          rm ${{matrix.build.ARTIFACT}}
+          chmod +x $ROTEL_OUT_FILE
           ls
           cd npm
           # set the binary name
