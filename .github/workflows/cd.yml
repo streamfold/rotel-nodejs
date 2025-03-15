@@ -92,7 +92,6 @@ jobs:
           #npm publish --access public --dry-run
       - name: tar
         run: |
-          cd ../
           tar -czf archive.tar.gz ./npm
       - name: upload
         run: |
