@@ -63,7 +63,7 @@ jobs:
         env:
           GITHUB_API_TOKEN: ${{ secrets.AGENT_DOWNLOAD_TOKEN }}
           ROTEL_RELEASE: ${{ matrrix.build.ARTIFACT }}
-          run: scripts/download-agent.sh
+        run: scripts/download-agent.sh
 
       - name: Publish to NPM
         shell: bash
