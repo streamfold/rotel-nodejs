@@ -19,6 +19,7 @@ jobs:
           - {
               NAME: linux-x64-glibc,
               OS: ubuntu-20.04,
+              runner: ubuntu-latest
               TOOLCHAIN: stable,
               TARGET: x86_64-unknown-linux-gnu,
               ARTIFACT: rotel_v0.0.2_x86_64-unknown-linux-gnu.tar.gz,
@@ -26,6 +27,7 @@ jobs:
           - {
               NAME: linux-arm64-glibc,
               OS: ubuntu-20.04,
+              runner: ubuntu-latest
               TOOLCHAIN: stable,
               TARGET: aarch64-unknown-linux-gnu,
               ARTIFACT: rotel_v0.0.2_aarch64-unknown-linux-gnu.tar.gz,
@@ -33,6 +35,7 @@ jobs:
           - {
               NAME: darwin-arm64,
               OS: macos-14,
+              runner: macos-latest
               TOOLCHAIN: stable,
               TARGET: aarch64-apple-darwin,
               ARTIFACT: rotel_v0.0.2_aarch64-apple-darwin.tar.gz,
