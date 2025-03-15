@@ -51,23 +51,20 @@ jobs:
           node-version: "16"
           registry-url: "https://registry.npmjs.org"
 
-          #- name: Download Rotel
-          #uses: dsaltares/fetch-gh-release-asset@1.1.2
-          #with:
-          #repo: 'streamfold/rotel'
-          #version: ${{ env.ROTEL_VERSION }}
-          #file: ${{ matrix.build.ARTIFACT }}
-          #token: ${{ secrets.AGENT_DOWNLOAD_TOKEN }}
-
       - name: Download Rotel
-        env:
-          GITHUB_API_TOKEN: ${{ secrets.AGENT_DOWNLOAD_TOKEN }}
-          ROTEL_RELEASE: ${{ matrix.build.ARTIFACT }}
-        run: scripts/download-agent.sh
+        uses: dsaltares/fetch-gh-release-asset@1.1.2
+        with:
+          repo: 'streamfold/rotel'
+          version: ${{ env.ROTEL_VERSION }}
+          file: ${{ matrix.build.ARTIFACT }}
+          token: ${{ secrets.AGENT_DOWNLOAD_TOKEN }}
+
 
       - name: Publish to NPM
         shell: bash
         run: |
+          tar -O -zxf ${{matrix.build.ARTIFACT}}
+          ls
           cd npm
           # set the binary name
           bin="app"
