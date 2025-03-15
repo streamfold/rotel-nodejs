@@ -93,7 +93,7 @@ jobs:
       - name: tar
         run: |
           cd ../
-          tar -czf ./npm archive.tar.gz
+          tar -czf archive.tar.gz ./npm
       - name: upload
         run: |
           id=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} --jq .id)
