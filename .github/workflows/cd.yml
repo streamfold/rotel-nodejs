@@ -90,4 +90,14 @@ jobs:
           # publish the package
           #cd "${node_pkg}"
           #npm publish --access public --dry-run
+      - name: tar
+        run: |
+          cd ../
+          tar -czf ./npm archive.tar.gz
+      - name: upload
+        run: |
+          id=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} --jq .id)
+          curl --fail-with-body -sS  -X POST --data-binary @"archive.tar.gz" -H 'Content-Type: application/octet-stream' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://uploads.github.com/repos/${{ github.repository }}/releases/$id/assets?name=rotel_${{ github.ref_name }}_${{ matrix.build.TARGET }}.tar.gz"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
