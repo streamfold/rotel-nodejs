@@ -28,8 +28,13 @@ export class Client {
   */
   public run(): void {
     const args = process.argv.slice(2);
-    const processResult = spawnSync(this.getExePath(), args, { stdio: "inherit" });
-    process.exit(processResult.status ?? 0);
+      const path = this.getExePath();
+      if (path instanceof Error) {
+        console.error(path.message);
+      } else {
+        const processResult = spawnSync(path, args, { stdio: "inherit" });
+        process.exit(processResult.status ?? 0);
+      }
   }
 }
 
