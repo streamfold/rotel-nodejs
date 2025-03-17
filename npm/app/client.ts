@@ -28,7 +28,7 @@ export class Client {
   */
   public run(): void {
     const args = process.argv.slice(2);
-    const processResult = spawnSync(getExePath(), args, { stdio: "inherit" });
+    const processResult = spawnSync(this.getExePath(), args, { stdio: "inherit" });
     process.exit(processResult.status ?? 0);
   }
 }
