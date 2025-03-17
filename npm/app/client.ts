@@ -8,7 +8,7 @@ import { spawnSync } from "child_process";
  * @see https://nodejs.org/api/os.html#osplatform
  * @example "x/xx/node_modules/app-darwin-arm64"
  */
-export Class Client {
+export class Client {
   private getExePath(): string | Error {
     const arch = process.arch;
     let os = process.platform as string;
