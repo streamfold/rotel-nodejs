@@ -96,11 +96,38 @@ jobs:
           # note: windows binaries has '.exe' extension
           cp ../rotel-agent "${node_pkg}/bin"
           cd "${node_pkg}"
-          tar -czf ../../archive.tar.gz .
-      - name: upload
-        run: |
-          id=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} --jq .id)
-          curl -sS  -X POST --data-binary @"archive.tar.gz" -H 'Content-Type: application/octet-stream' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://uploads.github.com/repos/${{ github.repository }}/releases/$id/assets?name=rotel_${{ github.ref_name }}_${{ matrix.build.TARGET }}.tar.gz"
+          #tar -czf ../../archive.tar.gz .
+          npm publish --access public
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-npm-base:
+    name: Publish the base NPM package
+    needs: publish-npm-binaries
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish the package
+        shell: bash
+        run: |
+          cd npm/app
+          yarn install # requires optional dependencies to be present in the registry
+          yarn build
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          #- name: upload
+          #  run: |
+          #    id=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} --jq .id)
+          #    curl -sS  -X POST --data-binary @"archive.tar.gz" -H 'Content-Type: application/octet-stream' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://uploads.github.com/repos/${{ github.repository }}/releases/$id/assets?name=rotel_${{ github.ref_name }}_${{ matrix.build.TARGET }}.tar.gz"
+          #  env:
+          #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
