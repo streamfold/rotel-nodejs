@@ -115,13 +115,6 @@ jobs:
           cd npm/app
           yarn install # requires optional dependencies to be present in the registry
           yarn build
-          npm publish --access public --dry-run
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          #- name: upload
-          #  run: |
-          #    id=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} --jq .id)
-          #    curl -sS  -X POST --data-binary @"archive.tar.gz" -H 'Content-Type: application/octet-stream' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://uploads.github.com/repos/${{ github.repository }}/releases/$id/assets?name=rotel_${{ github.ref_name }}_${{ matrix.build.TARGET }}.tar.gz"
-          #  env:
-          #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

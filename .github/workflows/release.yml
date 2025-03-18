@@ -1,4 +1,4 @@
-name: Continuous Deployment
+name: Release
 
 on:
   push:
@@ -96,7 +96,6 @@ jobs:
           # note: windows binaries has '.exe' extension
           cp ../rotel-agent "${node_pkg}/bin"
           cd "${node_pkg}"
-          #tar -czf ../../archive.tar.gz .
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -124,10 +123,4 @@ jobs:
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          #- name: upload
-          #  run: |
-          #    id=$(gh api -H "Accept: application/vnd.github+json" /repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} --jq .id)
-          #    curl -sS  -X POST --data-binary @"archive.tar.gz" -H 'Content-Type: application/octet-stream' -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://uploads.github.com/repos/${{ github.repository }}/releases/$id/assets?name=rotel_${{ github.ref_name }}_${{ matrix.build.TARGET }}.tar.gz"
-          #  env:
-          #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
