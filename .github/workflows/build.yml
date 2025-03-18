@@ -94,10 +94,6 @@ jobs:
           # note: windows binaries has '.exe' extension
           cp ../rotel-agent "${node_pkg}/bin"
           cd "${node_pkg}"
-          #tar -czf ../../archive.tar.gz .
-          npm publish --access public --dry-run
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-npm-base:
     name: Publish the base NPM package
