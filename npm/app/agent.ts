@@ -16,7 +16,7 @@ class Agent {
         this.agent_path = agent_path;
     }
 
-    start(config: Config): boolean {
+    async start(config: Config): Promise<boolean> {
         const agent_env = config.build_agent_environment();
 
         const p = child_process.spawn(
@@ -65,7 +65,7 @@ class Agent {
             });
             
             return new Promise<boolean>(resolve => {
-                p.on('close', (ret_code) => {
+                p.on('close', (ret_code: number) => {
                     if (ret_code !== 0) {
                         const out = outs.trim();
                         const err = errs.trim();
@@ -74,7 +74,7 @@ class Agent {
                         resolve(false);
                     } else {
                         this.running = true;
-                        this.pid_file = config.options.get("pid_file") || null;
+                        this.pid_file = config.options.pid_file || null;
                         resolve(true);
                     }
                 });
@@ -123,12 +123,14 @@ class Agent {
                     // Process might not exist
                 }
             } catch (error) {
-                if (error.code === 'ENOENT') {
-                    console.log("Unable to locate agent pid file");
-                } else if (error.code === 'ESRCH') {
-                    // In multi-worker configs, the process may have already terminated
-                } else {
-                    throw error;
+                if (error instanceof Error) {
+                    if ((error as any).code === 'ENOENT') { // Cast to any to access code property
+                        console.log("Unable to locate agent pid file");
+                    } else if ((error as any).code === 'ESRCH') { // Cast to any to access code property
+                        // In multi-worker configs, the process may have already terminated
+                    } else {
+                        throw error;
+                    }
                 }
             }
         }

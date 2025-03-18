@@ -3,8 +3,6 @@
 import * as os from 'os';
 import * as process from 'process';
 
-import { _errlog } from './error';
-
 export interface OTLPExporterEndpoint {
     endpoint?: string;
     protocol?: string;
@@ -209,14 +207,14 @@ export class Config {
         if (exporter !== undefined) {
             const protocol = exporter.protocol;
             if (protocol !== undefined && protocol !== 'grpc' && protocol !== 'http') {
-                _errlog("exporter protocol must be 'grpc' or 'http'");
+                console.error("exporter protocol must be 'grpc' or 'http'");
                 return false;
             }
         }
 
         const log_format = this.options.log_format;
         if (log_format !== undefined && log_format !== 'json' && log_format !== 'text') {
-            _errlog("log_format must be 'json' or 'text'");
+            console.error("log_format must be 'json' or 'text'");
             return false;
         }
 
