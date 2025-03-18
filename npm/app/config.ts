@@ -145,7 +145,7 @@ export class Config {
         return undefined;
     }
 
-    build_agent_environment(): Record<string, string> {
+    build_agent_environment(): Record<string, string | undefined> {
         const opts = this.options;
 
         const spawn_env = { ...process.env };
