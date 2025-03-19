@@ -54,7 +54,7 @@ describe('configuration and validation', () => {
         let c = Config._load_otlp_exporter_options_from_env(null);
         expect(c?.endpoint).toBe("https://api.foo.com");
         expect(c?.protocol).toBe("http");
-        // TODO - Why is this broken expect(c?.custom_headers).toBe(["[x-api-key: 123]"]);
+        expect(c?.headers).toStrictEqual({"[x-api-key": "123]"})
         expect(c?.compression).toBe("none");
         expect(c?.request_timeout).toBe("100s");
         expect(c?.retry_initial_backoff).toBe("200s");
