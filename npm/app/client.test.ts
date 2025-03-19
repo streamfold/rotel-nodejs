@@ -39,12 +39,12 @@ class MockServer {
 
         while (Date.now() - startTime < timeoutMs) {
             if (this.received) {
-                return Promise.resolve(true); // Correctly return a resolved Promise
+                return Promise.resolve(true); 
             }
-            await new Promise((resolve) => setTimeout(resolve, 1000).unref());
+            // avoid busy waiting
+            await new Promise((resolve) => setTimeout(resolve, 1000));
         }
-
-        return Promise.resolve(false); // Correctly return a resolved Promise
+        return Promise.resolve(false);
     }
 }
 
@@ -61,7 +61,7 @@ describe('HTTP Server Mocking', () => {
         done();
 
         exporter = new OTLPTraceExporter({
-            url: 'http://127.0.0.1:4317', // Replace with your OTLP collector endpoint
+            url: 'http://127.0.0.1:4317', 
         });
 
         // Initialize the tracer provider
