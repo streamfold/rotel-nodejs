@@ -54,7 +54,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: "19"
+          node-version: "18.19.0"
           registry-url: "https://registry.npmjs.org"
 
       - name: Download Rotel
@@ -105,7 +105,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: "19"
+          node-version: "18.19.0"
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish the package
