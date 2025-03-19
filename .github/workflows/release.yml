@@ -93,7 +93,6 @@ jobs:
           # generate package.json from the template
           envsubst < package.json.tmpl > "${node_pkg}/package.json"
           # copy the binary into the package
-          # note: windows binaries has '.exe' extension
           cp ../rotel-agent "${node_pkg}/bin"
           cd "${node_pkg}"
           npm publish --access public
@@ -118,6 +117,7 @@ jobs:
         shell: bash
         run: |
           cd npm/app
+          npm test
           yarn install # requires optional dependencies to be present in the registry
           yarn build
           npm publish --access public
