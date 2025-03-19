@@ -33,7 +33,7 @@ Add the `rotel` npm package to your project's dependencies. There are two approa
 
 In the startup section of your `index.js` or `index.ts` add the following code block. Replace the endpoint with the endpoint of your OpenTelemetry vendor and any required API KEY headers. 
 
-* Javascript * 
+***Javascript*** 
 ---
 ```javascript
 const { Rotel } = require("rotel-agent");
