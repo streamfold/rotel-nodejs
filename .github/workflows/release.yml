@@ -117,8 +117,8 @@ jobs:
         shell: bash
         run: |
           cd npm/app
-          npm test
           yarn install # requires optional dependencies to be present in the registry
+          npm test
           yarn build
           npm publish --access public
         env:
