@@ -27,7 +27,7 @@ Future updates will introduce support for filtering data, transforming telemetry
 
 Add the `rotel` npm package to your project's dependencies. There are two approaches to configuring rotel:
 1. JSON or typed config (Typescript) 
-2. environment variables
+2. Environment variables
 
 #### JSON / TS config 
 
