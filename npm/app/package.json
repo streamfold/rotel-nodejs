@@ -1,6 +1,6 @@
 {
   "name": "@streamfold/rotel",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2-alpha",
   "bin": "lib/index.js",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -39,9 +39,9 @@
     "typescript": "^4.9.4"
   },
   "optionalDependencies": {
-    "@streamfold/rotel-darwin-arm64": "0.0.1-alpha",
-    "@streamfold/rotel-linux-arm64": "0.0.1-alpha",
-    "@streamfold/rotel-linux-x64": "0.0.1-alpha"
+    "@streamfold/rotel-darwin-arm64": "0.0.2-alpha",
+    "@streamfold/rotel-linux-arm64": "0.0.2-alpha",
+    "@streamfold/rotel-linux-x64": "0.0.2-alpha"
   },
   "eslintConfig": {
     "extends": [
