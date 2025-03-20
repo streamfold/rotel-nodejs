@@ -1,6 +1,6 @@
 import http from 'http';
 import { AddressInfo } from 'net';
-import { Client } from './client';
+import { Client } from '../client';
 
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
