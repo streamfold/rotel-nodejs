@@ -1,6 +1,6 @@
 {
-  "name": "rotel-agent",
-  "version": "0.0.14-alpha",
+  "name": "@streamfold/rotel",
+  "version": "0.0.1-alpha",
   "bin": "lib/index.js",
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -39,9 +39,9 @@
     "typescript": "^4.9.4"
   },
   "optionalDependencies": {
-    "rotel-agent-darwin-arm64": "0.0.14-alpha",
-    "rotel-agent-linux-arm64": "0.0.14-alpha",
-    "rotel-agent-linux-x64": "0.0.14-alpha"
+    "@streamfold/rotel-darwin-arm64": "0.0.14-alpha",
+    "@streamfold/rotel-linux-arm64": "0.0.14-alpha",
+    "@streamfold/rotel-linux-x64": "0.0.14-alpha"
   },
   "eslintConfig": {
     "extends": [
