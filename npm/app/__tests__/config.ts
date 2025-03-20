@@ -1,5 +1,5 @@
 import exp from 'constants';
-import { Config } from './config';
+import { Config } from '../config';
 
 // TODO add some tests for merging configs
 

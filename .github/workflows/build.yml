@@ -54,7 +54,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18.19.0"
           registry-url: "https://registry.npmjs.org"
 
       - name: Download Rotel
@@ -97,7 +97,7 @@ jobs:
   publish-npm-base:
     name: Publish the base NPM package
     needs: publish-npm-binaries
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -105,7 +105,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18.19.0"
           registry-url: "https://registry.npmjs.org"
 
       - name: Publish the package
