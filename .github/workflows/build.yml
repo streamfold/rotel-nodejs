@@ -85,14 +85,15 @@ jobs:
           # set the version
           export node_version="${{ env.RELEASE_VERSION }}"
           # set the package name
-          export node_pkg="rotel-${node_os}-${node_arch}"
+          export node_pkg="@streamfold/rotel-${node_os}-${node_arch}"
+          export node_pkg_dir="rotel-${node_os}-${node_arch}"
           # create the package directory
-          mkdir -p "${node_pkg}/bin"
+          mkdir -p "${node_pkg_dir}/bin"
           # generate package.json from the template
-          envsubst < package.json.tmpl > "${node_pkg}/package.json"
+          envsubst < package.json.tmpl > "${node_pkg_dir}/package.json"
           # copy the binary into the package
-          cp ../rotel-agent "${node_pkg}/bin"
-          cd "${node_pkg}"
+          cp ../rotel-agent "${node_pkg_dir}/bin"
+          cd "${node_pkg_dir}"
 
   publish-npm-base:
     name: Publish the base NPM package
