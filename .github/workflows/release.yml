@@ -87,7 +87,7 @@ jobs:
           # set the version
           export node_version="${{ env.RELEASE_VERSION }}"
           # set the package name
-          export node_pkg="${bin}-${node_os}-${node_arch}"
+          export node_pkg="rotel-${node_os}-${node_arch}"
           # create the package directory
           mkdir -p "${node_pkg}/bin"
           # generate package.json from the template
