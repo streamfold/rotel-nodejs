@@ -19,8 +19,7 @@ class Client {
 
     async start(): Promise<void> {
         if (this.config.is_active()) {
-            const res = await agent.start(this.config);
-            console.log(res);
+            await agent.start(this.config);
         }
     }
 
