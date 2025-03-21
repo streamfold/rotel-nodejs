@@ -17,7 +17,7 @@ function getExePath() {
 
   try {
     // Since the binary will be located inside `node_modules`, we can simply call `require.resolve`
-    return require.resolve(`rotel-agent-${os}-${arch}/bin/rotel-agent`);
+    return require.resolve(`rotel-${os}-${arch}/bin/rotel-agent`);
   } catch (e) {
     throw new Error(
       `Couldn't find application binary inside node_modules for ${os}-${arch}`
