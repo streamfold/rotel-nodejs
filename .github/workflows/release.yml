@@ -118,6 +118,7 @@ jobs:
         shell: bash
         run: |
           cd npm/app
+          cp ../../README.md .
           yarn install # requires optional dependencies to be present in the registry
           npm test
           yarn build
