@@ -1,8 +1,7 @@
 # rotel 🌶️ 🍅
 Node.js package for the Rotel lightweight OpenTelemetry collector.
 
-[![npm version](https://badge.fury.io/js/rotel-agent.svg)](https://badge.fury.io/js/rotel-agent)
-
+[![npm version](https://badge.fury.io/js/@streamfold%2Frotel.svg)](https://badge.fury.io/js/@streamfold%2Frotel)
 ## Description
 
 This package provides an embedded OpenTelemetry collector, built on the lightweight Rotel collector. When started, it spawns a background daemon that accepts OpenTelemetry metrics, traces, and logs. Designed for minimal overhead, Rotel reduces resource consumption while simplifying telemetry collection and processing in Node.js applications—without requiring additional sidecar containers.
@@ -35,7 +34,7 @@ In the startup section of your `index.js` or `index.ts` add the following code b
 
 ---
 ```javascript
-const { Rotel } = require("rotel-agent");
+const { Rotel } = require("@streamfold/rotel");
 
 const rotel = new Rotel({
   enabled: true,
@@ -53,7 +52,7 @@ rotel.start()
 
 You can also configure rotel entirely with environment variables. In your application startup, insert:
 ```javascript
-const { Rotel } = require("rotel-agent");
+const { Rotel } = require("@streamfold/rotel");
 new Rotel().start();
 ```
 
@@ -118,7 +117,7 @@ When using the OTLP exporter over HTTP, the exporter will append `/v1/traces`, `
 
 For example, to override the endpoint for traces and metrics you can do the following:
 ```javascript
-const { Rotel } = require("rotel-agent");
+const { Rotel } = require("@streamfold/rotel");
 
 const rotel = new Rotel({
   enabled: true,
@@ -168,7 +167,7 @@ The code sample depends on the following environment variables:
 * `AXIOM_API_TOKEN`: Set to an API token that has access to the Axiom dataset
 
 ```javascript
-const { Rotel } = require("rotel-agent");
+const { Rotel } = require("@streamfold/rotel");
 
 const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc');
