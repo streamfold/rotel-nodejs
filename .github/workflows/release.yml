@@ -88,7 +88,7 @@ jobs:
           export node_version="${{ env.RELEASE_VERSION }}"
           # set the package name
           export node_pkg="@streamfold/rotel-${node_os}-${node_arch}"
-+         export node_pkg_dir="rotel-${node_os}-${node_arch}"
+          export node_pkg_dir="rotel-${node_os}-${node_arch}"
           # create the package directory
           mkdir -p "${node_pkg_dir}/bin"
           # generate package.json from the template
