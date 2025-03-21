@@ -25,10 +25,10 @@ Future updates will introduce support for filtering data, transforming telemetry
 ### Rotel configuration
 
 Add the `rotel` npm package to your project's dependencies. There are two approaches to configuring rotel:
-1. Typed config (Typescript) 
+1. Typescript or Javascript 
 2. Environment variables
 
-#### JSON / TS config 
+#### JS / TS config 
 
 In the startup section of your `index.js` or `index.ts` add the following code block. Replace the endpoint with the endpoint of your OpenTelemetry vendor and any required API KEY headers. 
 
