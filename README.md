@@ -250,7 +250,7 @@ If you set the option `debug_log` to `["traces"]`, or the environment variable `
 
 In most deployment environments you do not need to call `rotel.stop()` and it is **generally recommended that you don't**. Calling `rotel.stop()` will
 terminate the running agent on a host, so any further export calls from OTEL instrumentation will fail. In a multiprocess environment, such as
-_gunicorn_, terminating the Rotel agent from one process will terminate it for all other processes. On ephemeral deployment platforms, it is
+[clusters](https://nodejs.org/api/cluster.html) of node.js processes, terminating the Rotel agent from one process will terminate it for all other processes. On ephemeral deployment platforms, it is
 usually fine to leave the agent running until the compute instance, VM/container/isolate, terminate.
 
 ## Community
