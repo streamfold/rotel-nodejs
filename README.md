@@ -10,7 +10,7 @@ This package provides an embedded OpenTelemetry collector, built on the lightwei
 |----------------|-------------|
 | Metrics        | Alpha       |
 | Traces         | Alpha       |
-| Logs           | Coming soon |
+| Logs           | Alpha       |
 
 ## How it works
 
@@ -90,6 +90,7 @@ This is the full list of options and their environment variable alternatives. An
 | otlp_http_endpoint             | string       | ROTEL_OTLP_HTTP_ENDPOINT             | localhost:4318       |                 |
 | otlp_receiver_traces_disabled  | boolean      | ROTEL_OTLP_RECEIVER_TRACES_DISABLED  |                      |                 |
 | otlp_receiver_metrics_disabled | boolean      | ROTEL_OTLP_RECEIVER_METRICS_DISABLED |                      |                 |
+| otlp_receiver_logs_disabled    | boolean      | ROTEL_OTLP_RECEIVER_LOGS_DISABLED    |                      |                 |
 | exporter                       | OTLPExporter |                                      |                      |                 |
 
 The OTLPExporter can be enabled with the following options.
@@ -139,6 +140,7 @@ rotel.start();
 Or, you can override the endpoints using environment variables:
 * `ROTEL_OTLP_EXPORTER_TRACES_ENDPOINT=http://foo.example.com:4318/api/otlp/traces`
 * `ROTEL_OTLP_EXPORTER_METRICS_ENDPOINT=http://foo.example.com:4318/api/otlp/metrics`
+* `ROTEL_OTLP_EXPORTER_METRICS_ENDPOINT=http://foo.example.com:4318/api/otlp/logs`
 
 All the OTLP exporter settings can be overridden per endpoint type (traces, metrics, logs). Any value that is not overridden will fall back to the top-level exporter configuration or the default.
 
@@ -242,7 +244,7 @@ For the complete example, see the [hello world](https://github.com/streamfold/ro
 
 ## Debugging
 
-If you set the option `debug_log` to `["traces"]`, or the environment variable `ROTEL_DEBUG_LOG=traces`, then rotel will log a summary to the log file `/tmp/rotel-agent.log` each time it processes trace spans. You can add also specify *metrics* to debug metrics.   
+If you set the option `debug_log` to `["traces"]`, or the environment variable `ROTEL_DEBUG_LOG=traces`, then rotel will log a summary to the log file `/tmp/rotel-agent.log` each time it processes trace spans. You can add also specify *metrics* to debug metrics and *logs* to debug logs.   
 
 ## FAQ
 
