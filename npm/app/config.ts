@@ -25,6 +25,7 @@ export interface OTLPExporterEndpoint {
 export interface OTLPExporter extends OTLPExporterEndpoint {
     traces?: OTLPExporterEndpoint;
     metrics?: OTLPExporterEndpoint;
+    logs?: OTLPExporterEndpoint;
 }
 
 export interface Options {
@@ -37,6 +38,7 @@ export interface Options {
     otlp_http_endpoint?: string;
     otlp_receiver_traces_disabled?: boolean;
     otlp_receiver_metrics_disabled?: boolean;
+    otlp_receiver_logs_disabled?: boolean;
     exporter?: OTLPExporter;
 }
 
@@ -79,6 +81,7 @@ export class Config {
             otlp_http_endpoint: rotel_env("OTLP_HTTP_ENDPOINT"),
             otlp_receiver_traces_disabled: as_bool(rotel_env("OTLP_RECEIVER_TRACES_DISABLED")),
             otlp_receiver_metrics_disabled: as_bool(rotel_env("OTLP_RECEIVER_METRICS_DISABLED")),
+            otlp_receiver_logs_disabled: as_bool(rotel_env("OTLP_RECEIVER_LOGS_DISABLED")),
         };
 
         const exporter_type = as_lower(rotel_env("EXPORTER"));
@@ -97,6 +100,10 @@ export class Config {
             const metrics_endpoint = Config._load_otlp_exporter_options_from_env("METRICS");
             if (metrics_endpoint !== null) {
                 exporter.metrics = metrics_endpoint;
+            }
+            const logs_endpoint = Config._load_otlp_exporter_options_from_env("LOGS");
+            if (logs_endpoint != null) {
+                exporter.logs = logs_endpoint;
             }
         }
 
@@ -158,6 +165,7 @@ export class Config {
             "OTLP_HTTP_ENDPOINT": opts.otlp_http_endpoint,
             "OTLP_RECEIVER_TRACES_DISABLED": opts.otlp_receiver_traces_disabled,
             "OTLP_RECEIVER_METRICS_DISABLED": opts.otlp_receiver_metrics_disabled,
+            "OTLP_RECEIVER_LOGS_DISABLED": opts.otlp_receiver_logs_disabled,
         };
         
         const exporter = opts.exporter;
@@ -172,6 +180,10 @@ export class Config {
             const metrics = exporter.metrics;
             if (metrics !== undefined) {
                 _set_otlp_exporter_agent_env(updates, "METRICS", metrics);
+            }
+            const logs = exporter.logs;
+            if (logs !== undefined) {
+                _set_otlp_exporter_agent_env(updates, "LOGS", logs);
             }
         }
 
