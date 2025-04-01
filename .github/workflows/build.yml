@@ -20,7 +20,7 @@ jobs:
               runner: ubuntu-latest,
               TOOLCHAIN: stable,
               TARGET: x86_64-unknown-linux-gnu,
-              ARTIFACT: rotel_v0.0.2_x86_64-unknown-linux-gnu.tar.gz,
+              ARTIFACT: rotel_v0.0.1-alpha1_x86_64-unknown-linux-gnu.tar.gz,
             }
           - {
               NAME: linux-arm64-glibc,
@@ -28,7 +28,7 @@ jobs:
               runner: ubuntu-latest,
               TOOLCHAIN: stable,
               TARGET: aarch64-unknown-linux-gnu,
-              ARTIFACT: rotel_v0.0.2_aarch64-unknown-linux-gnu.tar.gz,
+              ARTIFACT: rotel_v0.0.1-alpha1_aarch64-unknown-linux-gnu.tar.gz,
             }
           - {
               NAME: darwin-arm64,
@@ -36,7 +36,7 @@ jobs:
               runner: macos-latest,
               TOOLCHAIN: stable,
               TARGET: aarch64-apple-darwin,
-              ARTIFACT: rotel_v0.0.2_aarch64-apple-darwin.tar.gz,
+              ARTIFACT: rotel_v0.0.1-alpha1_aarch64-apple-darwin.tar.gz,
             }
     steps:
       - name: Checkout
