@@ -23,9 +23,17 @@ export interface OTLPExporterEndpoint {
 
 // TODO: when we have more, include a key that defines this exporter type
 export interface OTLPExporter extends OTLPExporterEndpoint {
-    traces?: OTLPExporterEndpoint;
+    _type?: string 
+    traces?: OTLPExporterEndpoint | DatadogExporter;
     metrics?: OTLPExporterEndpoint;
     logs?: OTLPExporterEndpoint;
+}
+
+export interface DatadogExporter {
+    _type?: string 
+    region?: string 
+    custom_endpoint?: string 
+    api_key?: string 
 }
 
 export interface Options {
@@ -39,7 +47,11 @@ export interface Options {
     otlp_receiver_traces_disabled?: boolean;
     otlp_receiver_metrics_disabled?: boolean;
     otlp_receiver_logs_disabled?: boolean;
-    exporter?: OTLPExporter;
+    exporter?: OTLPExporter | DatadogExporter;
+    exporters?: Record<string, OTLPExporter | DatadogExporter | undefined>
+    exporters_metrics?: string[] | undefined
+    exporters_traces?: string[] | undefined
+    exporters_logs?: string[] | undefined
 }
 
 export class Config {
@@ -84,26 +96,74 @@ export class Config {
             otlp_receiver_logs_disabled: as_bool(rotel_env("OTLP_RECEIVER_LOGS_DISABLED")),
         };
 
-        const exporter_type = as_lower(rotel_env("EXPORTER"));
-        if (exporter_type === null || exporter_type === "otlp") {
-            let exporter: OTLPExporter = Config._load_otlp_exporter_options_from_env(null) as OTLPExporter;
-            if (exporter === null) {
-                // make sure we always construct the top-level exporter config
-                exporter = {};
-            }
-            env.exporter = exporter;
+        const exporters = as_lower(rotel_env("EXPORTERS"));
+        if (exporters !== null && exporters !== undefined) {
+            env["exporters"] = {};
+            for (const exporterStr of exporters.split(",")) {
+                let name = exporterStr;
+                let value = exporterStr;
+                if (exporterStr.includes(":")) {
+                    [name, value] = exporterStr.split(":", 2);
+                }
 
-            const traces_endpoint = Config._load_otlp_exporter_options_from_env("TRACES");
-            if (traces_endpoint !== null) {
-                exporter.traces = traces_endpoint;
+                let exporter: OTLPExporter | DatadogExporter | undefined = undefined;
+                let pfx = "EXPORTER_" + name.toUpperCase + "_" 
+                switch(value) {
+                    case "otlp":
+                        exporter = Config._load_otlp_exporter_options_from_env(pfx, "OTLPExporter") as OTLPExporter;
+                        exporter._type = "otlp"
+                        if (exporter === null || exporter === undefined) {
+                            exporter = {};
+                            exporter._type = "otlp";
+                        }
+                    case "datadog":
+                        const datadogExporter: DatadogExporter = {                           
+                            _type: "datadog",
+                            region: rotel_env(pfx + "REGION"),
+                            custom_endpoint: rotel_env(pfx + "CUSTOM_ENDPOINT"),
+                            api_key: rotel_env(pfx + "API_KEY"),
+                        };
+                        exporter = datadogExporter;
+                }
+                if (exporter !== undefined) {
+                    env.exporters[name] = exporter;
+                }
             }
-            const metrics_endpoint = Config._load_otlp_exporter_options_from_env("METRICS");
-            if (metrics_endpoint !== null) {
-                exporter.metrics = metrics_endpoint;
-            }
-            const logs_endpoint = Config._load_otlp_exporter_options_from_env("LOGS");
-            if (logs_endpoint != null) {
-                exporter.logs = logs_endpoint;
+            env.exporters_traces = as_list(rotel_env("EXPORTERS_TRACES"))
+            env.exporters_metrics = as_list(rotel_env("EXPORTERS_METRICS"))
+            env.exporters_logs = as_list(rotel_env("EXPORTERS_LOGS"))
+        } else {
+            const exporter_type = as_lower(rotel_env("EXPORTER"));
+            if (exporter_type === null || exporter_type === "otlp") {
+                let exporter: OTLPExporter = Config._load_otlp_exporter_options_from_env("OTLP_EXPORTER_", null) as OTLPExporter;
+                if (exporter === null) {
+                    // make sure we always construct the top-level exporter config
+                    exporter = {};
+                }
+                exporter._type = "otlp";
+                env.exporter = exporter;
+
+                const traces_endpoint = Config._load_otlp_exporter_options_from_env("OTLP_EXPORTER_TRACES_", "TRACES");
+                if (traces_endpoint !== null) {
+                    exporter.traces = traces_endpoint;
+                }
+                const metrics_endpoint = Config._load_otlp_exporter_options_from_env("OTLP_EXPORTER_METRICS_", "METRICS");
+                if (metrics_endpoint !== null) {
+                    exporter.metrics = metrics_endpoint;
+                }
+                const logs_endpoint = Config._load_otlp_exporter_options_from_env("OTLP_EXPORTER_LOGS_", "LOGS");
+                if (logs_endpoint != null) {
+                    exporter.logs = logs_endpoint;
+                }
+            } else if (exporter_type === "datadog") {
+                const pfx = "DATADOG_EXPORTER_"
+                var c: DatadogExporter =  {
+                    _type: "datadog",
+                    region: rotel_env(pfx + "REGION"),
+                    custom_endpoint: rotel_env(pfx + "CUSTOM_ENDPOINT"),
+                    api_key: rotel_env(pfx + "API_KEY"),
+                }
+            env.exporter = c;
             }
         }
 
@@ -117,11 +177,20 @@ export class Config {
         return final_env;
     }
 
-    static _load_otlp_exporter_options_from_env(endpoint_type: string | null): OTLPExporter | OTLPExporterEndpoint | undefined {
-        let pfx = "OTLP_EXPORTER_";
-        if (endpoint_type !== null) {
-            pfx += `${endpoint_type}_`;
-        }
+    static _load_datadog_exporter_options_from_env(pfx: string): DatadogExporter {
+        const datadogExporter: DatadogExporter = {
+            region: rotel_env(pfx + "REGION"),
+            custom_endpoint: rotel_env(pfx + "CUSTOM_ENDPOINT"),
+            api_key: rotel_env(pfx + "API_KEY"),
+        };
+        return datadogExporter;
+    }
+
+    static _load_otlp_exporter_options_from_env(pfx: string, endpoint_type: string | null): OTLPExporter | OTLPExporterEndpoint | undefined {
+        // let pfx = "OTLP_EXPORTER_";
+        // if (endpoint_type !== null) {
+        //     pfx += `${endpoint_type}_`;
+        // }
         const endpoint: OTLPExporterEndpoint = {
             endpoint: rotel_env(pfx + "ENDPOINT"),
             protocol: as_lower(rotel_env(pfx + "PROTOCOL")),
@@ -170,20 +239,30 @@ export class Config {
         
         const exporter = opts.exporter;
         if (exporter !== undefined) {
-            _set_otlp_exporter_agent_env(updates, null, exporter);
+            console.log("exporter._type in build_agent_environment is " + exporter._type);
+            switch (exporter._type) {
+                case "otlp" || undefined:
+                    const otlpExporter: OTLPExporter = <OTLPExporter>exporter;
+                    _set_otlp_exporter_agent_env(updates, null, exporter);
 
-            const traces = exporter.traces;
-            if (traces !== undefined) {
-                _set_otlp_exporter_agent_env(updates, "TRACES", traces);
-            }
+                    const traces = otlpExporter.traces;
+                    if (traces !== undefined) {
+                        _set_otlp_exporter_agent_env(updates, "TRACES", traces);
+                    }
 
-            const metrics = exporter.metrics;
-            if (metrics !== undefined) {
-                _set_otlp_exporter_agent_env(updates, "METRICS", metrics);
-            }
-            const logs = exporter.logs;
-            if (logs !== undefined) {
-                _set_otlp_exporter_agent_env(updates, "LOGS", logs);
+                    const metrics = otlpExporter.metrics;
+                    if (metrics !== undefined) {
+                        _set_otlp_exporter_agent_env(updates, "METRICS", metrics);
+                    }
+                    const logs = otlpExporter.logs;
+                    if (logs !== undefined) {
+                        _set_otlp_exporter_agent_env(updates, "LOGS", logs);
+                    }
+                    break;
+                case "datadog":
+                    const datadogExporter: DatadogExporter = <DatadogExporter>exporter;
+                    _set_datadog_exporter_agent_env(updates, "DATADOG_EXPORTER_" , exporter);
+                    break;
             }
         }
 
@@ -217,10 +296,19 @@ export class Config {
 
         const exporter = this.options.exporter;
         if (exporter !== undefined) {
-            const protocol = exporter.protocol;
-            if (protocol !== undefined && protocol !== 'grpc' && protocol !== 'http') {
-                console.error("exporter protocol must be 'grpc' or 'http'");
-                return false;
+            if (exporter._type === undefined) {
+                exporter._type = "otlp"
+            }
+            switch (exporter._type) {
+                case "otlp":
+                    const otlpExporter: OTLPExporter = <OTLPExporter>exporter;
+                    const protocol = otlpExporter.protocol;
+                    console.log("protocol is " + protocol);
+                    if (protocol !== undefined && protocol !== 'grpc' && protocol !== 'http') {
+                        console.error("exporter protocol must be 'grpc' or 'http'");
+                        return false;
+                    }
+                
             }
         }
 
@@ -232,6 +320,15 @@ export class Config {
 
         return true;
     }
+}
+
+function _set_datadog_exporter_agent_env(updates: Record<string, any>, pfx: string, exporter: DatadogExporter) {
+    Object.assign(updates, {
+        [pfx + "EXPORTER"]: "datadog", 
+        [pfx + "REGION"]: exporter.region,
+        [pfx + "CUSTOM_ENDPOINT"]: exporter.custom_endpoint,
+        [pfx + "API_KEY"]: exporter.api_key,
+    })
 }
 
 function _set_otlp_exporter_agent_env(updates: Record<string, any>, endpoint_type: string | null, exporter: OTLPExporter | OTLPExporterEndpoint | null): void {
@@ -317,6 +414,8 @@ function as_bool(value: string | null | undefined): boolean | undefined {
 }
 
 function rotel_env(base_key: string): string | undefined {
+    // let key = rotel_expand_env_key(base_key);
+    // console.log("key is " + key);
     const envVar = process.env[rotel_expand_env_key(base_key)];
     return envVar !== undefined ? envVar : undefined;
 }
