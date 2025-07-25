@@ -24,9 +24,9 @@ export interface OTLPExporterEndpoint {
 // TODO: when we have more, include a key that defines this exporter type
 export interface OTLPExporter extends OTLPExporterEndpoint {
     _type?: string 
-    traces?: OTLPExporterEndpoint | DatadogExporter;
-    metrics?: OTLPExporterEndpoint;
-    logs?: OTLPExporterEndpoint;
+    traces?: OTLPExporterEndpoint | DatadogExporter | BlackholeExporter;
+    metrics?: OTLPExporterEndpoint | BlackholeExporter;
+    logs?: OTLPExporterEndpoint | BlackholeExporter;
 }
 
 export interface DatadogExporter {
@@ -35,6 +35,24 @@ export interface DatadogExporter {
     custom_endpoint?: string 
     api_key?: string 
 }
+
+export interface BlackholeExporter {
+    _type?: string
+} 
+
+
+export interface ClickhouseExporter {
+    _type?: string
+    endpoint?: string
+    database?: string
+    table_prefix?: string 
+    compression?: string
+    async_insert?: boolean 
+    user?: string
+    password?: string
+    enable_json?: boolean
+}
+
 
 export interface Options {
     enabled?: boolean;
@@ -47,8 +65,8 @@ export interface Options {
     otlp_receiver_traces_disabled?: boolean;
     otlp_receiver_metrics_disabled?: boolean;
     otlp_receiver_logs_disabled?: boolean;
-    exporter?: OTLPExporter | DatadogExporter;
-    exporters?: Record<string, OTLPExporter | DatadogExporter | undefined>
+    exporter?: OTLPExporter | DatadogExporter | ClickhouseExporter | BlackholeExporter;
+    exporters?: Record<string, OTLPExporter | DatadogExporter | ClickhouseExporter |BlackholeExporter | undefined>
     exporters_metrics?: string[] | undefined
     exporters_traces?: string[] | undefined
     exporters_logs?: string[] | undefined
@@ -97,7 +115,7 @@ export class Config {
         };
 
         const exporters = as_lower(rotel_env("EXPORTERS"));
-        if (exporters !== null && exporters !== undefined) {
+        if (exporters !== undefined) {
             env["exporters"] = {};
             for (const exporterStr of exporters.split(",")) {
                 let name = exporterStr;
@@ -106,7 +124,7 @@ export class Config {
                     [name, value] = exporterStr.split(":", 2);
                 }
 
-                let exporter: OTLPExporter | DatadogExporter | undefined = undefined;
+                let exporter: OTLPExporter | DatadogExporter | ClickhouseExporter | BlackholeExporter | undefined = undefined;
                 let pfx = "EXPORTER_" + name.toUpperCase + "_" 
                 switch(value) {
                     case "otlp":
@@ -124,6 +142,24 @@ export class Config {
                             api_key: rotel_env(pfx + "API_KEY"),
                         };
                         exporter = datadogExporter;
+                    case "blackhole":
+                        const blackholeExporter: BlackholeExporter = {
+                            _type: "blackhole",
+                        }
+                        exporter = blackholeExporter;
+                    case "clickhouse":
+                        const clickhouseExporter: ClickhouseExporter = {
+                            _type: "clickhouse",
+                            endpoint: rotel_env(pfx + "ENDPOINT"),
+                            database: rotel_env(pfx + "DATABASE"),
+                            table_prefix: rotel_env(pfx + "TABLE_PREFIX"),
+                            compression: rotel_env(pfx + "COMPRESSION"),
+                            async_insert: as_bool(rotel_env(pfx + "ASYNC_INSERT")),
+                            user: rotel_env(pfx + "USER"),
+                            password: rotel_env(pfx + "PASSWORD"),
+                            enable_json: as_bool(rotel_env(pfx + "ENABLE_JSON")),
+                        }
+                        exporter = clickhouseExporter;
                 }
                 if (exporter !== undefined) {
                     env.exporters[name] = exporter;
@@ -156,14 +192,34 @@ export class Config {
                     exporter.logs = logs_endpoint;
                 }
             } else if (exporter_type === "datadog") {
-                const pfx = "DATADOG_EXPORTER_"
-                var c: DatadogExporter =  {
+                const pfx = "DATADOG_EXPORTER_";
+                var d: DatadogExporter =  {
                     _type: "datadog",
                     region: rotel_env(pfx + "REGION"),
                     custom_endpoint: rotel_env(pfx + "CUSTOM_ENDPOINT"),
                     api_key: rotel_env(pfx + "API_KEY"),
                 }
-            env.exporter = c;
+                env.exporter = d;
+            } else if (exporter_type === "blackhole") {
+                const pfx = "BLACKHOLE_EXPORTER_";
+                var b: BlackholeExporter = {
+                    _type: "blackhole",
+                }
+                env.exporter = b
+            } else if (exporter_type === "clickhouse") {
+                const pfx = "CLICKHOUSE_EXPORTER_"
+                var c: ClickhouseExporter = {
+                    _type: "clickhouse",
+                    endpoint: rotel_env(pfx + "ENDPOINT"),
+                    database: rotel_env(pfx + "DATABASE"),
+                    table_prefix: rotel_env(pfx + "TABLE_PREFIX"),
+                    compression: rotel_env(pfx + "COMPRESSION"),
+                    async_insert: as_bool(rotel_env(pfx + "ASYNC_INSERT")),
+                    user: rotel_env(pfx + "USER"),
+                    password: rotel_env(pfx + "PASSWORD"),
+                    enable_json: as_bool(rotel_env(pfx + "ENABLE_JSON")),
+                }
+                env.exporter = c;
             }
         }
 
@@ -177,20 +233,35 @@ export class Config {
         return final_env;
     }
 
-    static _load_datadog_exporter_options_from_env(pfx: string): DatadogExporter {
-        const datadogExporter: DatadogExporter = {
-            region: rotel_env(pfx + "REGION"),
-            custom_endpoint: rotel_env(pfx + "CUSTOM_ENDPOINT"),
-            api_key: rotel_env(pfx + "API_KEY"),
+    static otlp_exporter(config?: Partial<OTLPExporter>): OTLPExporter {
+        return {
+            _type: "otlp",
+            ...config
         };
-        return datadogExporter;
     }
 
+    static datadog_exporter(config?: Partial<DatadogExporter>): DatadogExporter {
+        return {
+            _type: "datadog",
+            ...config
+        };
+    }
+
+    static blackhole_exporter(config?: Partial<BlackholeExporter>): BlackholeExporter {
+        return {
+            _type: "blackhole",
+            ...config
+        };
+    }
+
+    static clickhouse_exporter(config?: Partial<ClickhouseExporter>): ClickhouseExporter {
+        return {
+            _type: "clickhouse",
+            ...config
+        }
+    } 
+
     static _load_otlp_exporter_options_from_env(pfx: string, endpoint_type: string | null): OTLPExporter | OTLPExporterEndpoint | undefined {
-        // let pfx = "OTLP_EXPORTER_";
-        // if (endpoint_type !== null) {
-        //     pfx += `${endpoint_type}_`;
-        // }
         const endpoint: OTLPExporterEndpoint = {
             endpoint: rotel_env(pfx + "ENDPOINT"),
             protocol: as_lower(rotel_env(pfx + "PROTOCOL")),
@@ -236,33 +307,45 @@ export class Config {
             "OTLP_RECEIVER_METRICS_DISABLED": opts.otlp_receiver_metrics_disabled,
             "OTLP_RECEIVER_LOGS_DISABLED": opts.otlp_receiver_logs_disabled,
         };
-        
-        const exporter = opts.exporter;
-        if (exporter !== undefined) {
-            console.log("exporter._type in build_agent_environment is " + exporter._type);
-            switch (exporter._type) {
-                case "otlp" || undefined:
-                    const otlpExporter: OTLPExporter = <OTLPExporter>exporter;
-                    _set_otlp_exporter_agent_env(updates, null, exporter);
-
-                    const traces = otlpExporter.traces;
-                    if (traces !== undefined) {
-                        _set_otlp_exporter_agent_env(updates, "TRACES", traces);
-                    }
-
-                    const metrics = otlpExporter.metrics;
-                    if (metrics !== undefined) {
-                        _set_otlp_exporter_agent_env(updates, "METRICS", metrics);
-                    }
-                    const logs = otlpExporter.logs;
-                    if (logs !== undefined) {
-                        _set_otlp_exporter_agent_env(updates, "LOGS", logs);
-                    }
-                    break;
-                case "datadog":
-                    const datadogExporter: DatadogExporter = <DatadogExporter>exporter;
-                    _set_datadog_exporter_agent_env(updates, "DATADOG_EXPORTER_" , exporter);
-                    break;
+       
+        const exporters = opts.exporters;
+        if (exporters) {
+            const exportersList: string[] = [];
+            for (const [name, exporter] of Object.entries(exporters)) {
+                const exporterType = (exporter as Record<string, any>).get?.("_type") || (exporter as any)["_type"];
+                if (name === exporterType) {
+                    exportersList.push(`${name}`);
+                } else {
+                    exportersList.push(`${name}:${exporterType}`);
+                }
+                const pfx = `EXPORTER_${name.toUpperCase()}_`;
+                this._set_exporter_agent_env(updates, pfx, exporter);
+            }
+            Object.assign(updates, {
+                "EXPORTERS": exportersList.join(","),
+            });
+            
+            if (opts.exporters_metrics !== null) {
+                Object.assign(updates, {
+                    "EXPORTERS_METRICS": opts.exporters_metrics?.join(","),
+                });
+            }
+            
+            if (opts.exporters_traces !== null) {
+                Object.assign(updates, {
+                    "EXPORTERS_TRACES": opts.exporters_traces?.join(","),
+                });
+            }
+            
+            if (opts.exporters_logs !== null) {
+                Object.assign(updates, {
+                    "EXPORTERS_LOGS": opts.exporters_logs?.join(","),
+                });
+            }
+        } else {
+            const exporter = opts.exporter;
+            if (exporter !== undefined) {
+                this._set_exporter_agent_env(updates, null, exporter)
             }
         }
 
@@ -285,7 +368,63 @@ export class Config {
             }
         }
 
+        //this.log_spawn_env(spawn_env);
         return spawn_env;
+    }
+ 
+    // for local dev debugging purposes.
+    log_spawn_env(spawn_env: { [x: string]: string | undefined; TZ?: string | undefined; }): void {
+        console.log("spawn_env contents:");
+        for (const [key, value] of Object.entries(spawn_env)) {
+            console.log(`  ${key}: ${value}`);
+        }
+    }
+
+    _set_exporter_agent_env(
+        updates: Record<string, any>, 
+        pfx: string | null, 
+        exporter: OTLPExporter | DatadogExporter | undefined 
+    ): void {
+        const expType = (exporter as Record<string, any>).get?.("_type") || (exporter as any)["_type"];
+        
+        if (expType === "datadog") {
+            const d: DatadogExporter = exporter as DatadogExporter;
+            _set_datadog_exporter_agent_env(updates, pfx, d);
+            return;
+        }
+
+        if (expType === "blackhole") {
+            const b: BlackholeExporter = exporter as BlackholeExporter;
+            _set_blackhole_exporter_agent_env(updates, pfx, b);
+            return;
+        }
+
+        if (expType == "clickhouse") {
+            const c: ClickhouseExporter = exporter as ClickhouseExporter;
+            _set_clickhouse_exporter_agent_env(updates, pfx, c)
+            return;
+        }
+        
+        //
+        // Fall through to OTLP exporter
+        //
+        const e: OTLPExporter = exporter as OTLPExporter;
+        _set_otlp_exporter_agent_env(updates, pfx, null, e);
+        
+        const traces = (exporter as any).get?.("traces") || (exporter as any)["traces"];
+        if (traces !== null && traces !== undefined) {
+            _set_otlp_exporter_agent_env(updates, null, "TRACES", traces);
+        }
+        
+        const metrics = (exporter as any).get?.("metrics") || (exporter as any)["metrics"];
+        if (metrics !== null && metrics !== undefined) {
+            _set_otlp_exporter_agent_env(updates, null, "METRICS", metrics);
+        }
+        
+        const logs = (exporter as any).get?.("logs") || (exporter as any)["logs"];
+        if (logs !== null && logs !== undefined) {
+            _set_otlp_exporter_agent_env(updates, null, "LOGS", logs); // Note: was "metrics" in original, assuming this is correct
+        }
     }
 
     // Perform some minimal validation for now, we can expand this as needed
@@ -303,7 +442,6 @@ export class Config {
                 case "otlp":
                     const otlpExporter: OTLPExporter = <OTLPExporter>exporter;
                     const protocol = otlpExporter.protocol;
-                    console.log("protocol is " + protocol);
                     if (protocol !== undefined && protocol !== 'grpc' && protocol !== 'http') {
                         console.error("exporter protocol must be 'grpc' or 'http'");
                         return false;
@@ -322,7 +460,19 @@ export class Config {
     }
 }
 
-function _set_datadog_exporter_agent_env(updates: Record<string, any>, pfx: string, exporter: DatadogExporter) {
+function _set_blackhole_exporter_agent_env(updates: Record<string, any>, pfx: string | null, exporter: BlackholeExporter) {
+    if (pfx === null) {
+        pfx = "BLACKHOLE_EXPORTER_";
+    }
+    Object.assign(updates, {
+        [pfx + "EXPORTER"]: "blackhole", 
+    })
+}
+
+function _set_datadog_exporter_agent_env(updates: Record<string, any>, pfx: string | null, exporter: DatadogExporter) {
+    if (pfx === null) {
+        pfx = "DATADOG_EXPORTER_";
+    }
     Object.assign(updates, {
         [pfx + "EXPORTER"]: "datadog", 
         [pfx + "REGION"]: exporter.region,
@@ -331,8 +481,30 @@ function _set_datadog_exporter_agent_env(updates: Record<string, any>, pfx: stri
     })
 }
 
-function _set_otlp_exporter_agent_env(updates: Record<string, any>, endpoint_type: string | null, exporter: OTLPExporter | OTLPExporterEndpoint | null): void {
-    let pfx = "OTLP_EXPORTER_";
+function _set_clickhouse_exporter_agent_env(updates: Record<string, any>, pfx: string | null, exporter: ClickhouseExporter) {
+    if (pfx === null) {
+        pfx = "CLICKHOUSE_EXPORTER_"
+        updates.update({
+            "EXPORTER": "clickhouse", 
+        })
+    }
+
+    Object.assign(updates, {
+        [pfx + "ENDPOINT"]: exporter.endpoint,
+        [pfx + "DATABASE"]: exporter.database,
+        [pfx + "TABLE_PREFIX"]: exporter.table_prefix,
+        [pfx + "COMPRESSION"]: exporter.compression,
+        [pfx + "ASYNC_INSERT"]: exporter.async_insert,
+        [pfx + "USER"]: exporter.user,
+        [pfx + "PASSWORD"]: exporter.password,
+        [pfx + "ENABLE_JSON"]: exporter.enable_json,
+    })
+}
+
+function _set_otlp_exporter_agent_env(updates: Record<string, any>, pfx: string | null, endpoint_type: string | null, exporter: OTLPExporter | OTLPExporterEndpoint | null): void {
+    if (pfx === null) {
+        pfx = "OTLP_EXPORTER_";
+    }
     if (endpoint_type !== null) {
         pfx += `${endpoint_type}_`;
     }
@@ -414,8 +586,6 @@ function as_bool(value: string | null | undefined): boolean | undefined {
 }
 
 function rotel_env(base_key: string): string | undefined {
-    // let key = rotel_expand_env_key(base_key);
-    // console.log("key is " + key);
     const envVar = process.env[rotel_expand_env_key(base_key)];
     return envVar !== undefined ? envVar : undefined;
 }
