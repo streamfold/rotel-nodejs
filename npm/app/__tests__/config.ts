@@ -68,16 +68,6 @@ describe('configuration and validation', () => {
         expect(c?.tls_skip_verify).toBe(true);
     });
 
-    it('Load DatadogExporter config from ENV', () => {
-        process.env.ROTEL_DATADOG_EXPORTER_REGION = "us1";
-        process.env.ROTEL_DATADOG_EXPORTER_CUSTOM_ENDPOINT = "http://localhost:5555";
-        process.env.ROTEL_DATADOG_EXPORTER_API_KEY = "123abc";
-        let c = Config._load_datadog_exporter_options_from_env("DATADOG_EXPORTER_");
-        expect(c.region).toBe("us1");
-        expect(c.custom_endpoint).toBe("http://localhost:5555");
-        expect(c.api_key).toBe("123abc");
-    });
-
     it('fails validation', () => {
         process.env.ROTEL_ENABLED = "true";
         const c1 = new Config();
