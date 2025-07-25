@@ -40,7 +40,6 @@ export interface BlackholeExporter {
     _type?: string
 } 
 
-
 export interface ClickhouseExporter {
     _type?: string
     endpoint?: string
@@ -51,6 +50,35 @@ export interface ClickhouseExporter {
     user?: string
     password?: string
     enable_json?: boolean
+}
+
+export interface KafkaExporter {
+    _type?: string
+    brokers?: string
+    traces_topic?: string
+    metrics_topic?: string
+    logs_topic?: string
+    format?: string
+    compression?: string
+    request_timeout?: string
+    acks?: string
+    client_id?: string
+    max_message_bytes?: number
+    linger_ms?: number
+    retries?: number
+    retry_backoff_ms?: number
+    retry_backoff_max_ms?: number
+    message_timeout_ms?:number
+    request_timeout_ms?: number
+    batch_size?: number
+    partitioner?: string
+    partition_metrics_by_resource_attributes?: boolean
+    partition_logs_by_resource_attributes?: boolean
+    custom_config?: string
+    sasl_username?: string
+    sasl_password?: string
+    sasl_mechanism?: string
+    security_protocol?: string
 }
 
 
@@ -124,7 +152,7 @@ export class Config {
                     [name, value] = exporterStr.split(":", 2);
                 }
 
-                let exporter: OTLPExporter | DatadogExporter | ClickhouseExporter | BlackholeExporter | undefined = undefined;
+                let exporter: OTLPExporter | DatadogExporter | ClickhouseExporter | BlackholeExporter | KafkaExporter | undefined = undefined;
                 let pfx = "EXPORTER_" + name.toUpperCase + "_" 
                 switch(value) {
                     case "otlp":
@@ -160,6 +188,35 @@ export class Config {
                             enable_json: as_bool(rotel_env(pfx + "ENABLE_JSON")),
                         }
                         exporter = clickhouseExporter;
+                    case "kafka": 
+                     const kafkaExporter: KafkaExporter = {
+                        _type: "kafka",
+                        brokers: rotel_env(pfx + "BROKERS"),
+                        traces_topic: rotel_env(pfx + "TRACES_TOPIC"),
+                        metrics_topic: rotel_env(pfx + "METRICS_TOPIC"),
+                        logs_topic: rotel_env(pfx + "LOGS_TOPIC"),
+                        format: rotel_env(pfx + "FORMAT"),
+                        compression: rotel_env(pfx + "COMPRESSION"),
+                        request_timeout: rotel_env(pfx + "REQUEST_TIMEOUT"),
+                        acks: rotel_env(pfx + "ACKS"),
+                        client_id: rotel_env(pfx + "CLIENT_ID"),
+                        max_message_bytes: as_int(rotel_env(pfx + "MAX_MESSAGE_BYTES")),
+                        linger_ms: as_int(rotel_env(pfx + "LINGER_MS")),
+                        retries: as_int(rotel_env(pfx + "RETRIES")),
+                        retry_backoff_ms: as_int(rotel_env(pfx + "RETRY_BACKOFF_MS")),
+                        retry_backoff_max_ms: as_int(rotel_env(pfx + "RETRY_BACKOFF_MAX_MS")),
+                        message_timeout_ms: as_int(rotel_env(pfx + "MESSAGE_TIMEOUT_MS")),
+                        request_timeout_ms: as_int(rotel_env(pfx + "REQUEST_TIMEOUT_MS")),
+                        batch_size: as_int(rotel_env(pfx + "BATCH_SIZE")),
+                        partitioner: rotel_env(pfx + "REQUEST_TIMEOUT_MS"),
+                        partition_metrics_by_resource_attributes: as_bool(rotel_env(pfx + "PARTITION_METRICS_BY_RESOURCE_ATTRIBUTES")),
+                        partition_logs_by_resource_attributes: as_bool(rotel_env(pfx + "PARTITION_LOGS_BY_RESOURCE_ATTRIBUTES")),
+                        custom_config: rotel_env(pfx + "CUSTOM_CONFIG"),
+                        sasl_username: rotel_env(pfx + "SASL_USERNAME"),
+                        sasl_password: rotel_env(pfx + "SASL_PASSWORD"),
+                        sasl_mechanism: rotel_env(pfx + "SASL_MECHANISM"),
+                        security_protocol: rotel_env(pfx + "SECURITY_PROTOCOL"),
+                     }
                 }
                 if (exporter !== undefined) {
                     env.exporters[name] = exporter;
@@ -220,6 +277,36 @@ export class Config {
                     enable_json: as_bool(rotel_env(pfx + "ENABLE_JSON")),
                 }
                 env.exporter = c;
+            } else if(exporter_type === "kafka") {
+                const pfx = "KAFKA_EXPORTER_";
+                var k: KafkaExporter = {
+                    _type: "kafka",
+                    brokers: rotel_env(pfx + "BROKERS"),
+                    traces_topic: rotel_env(pfx + "TRACES_TOPIC"),
+                    metrics_topic: rotel_env(pfx + "METRICS_TOPIC"),
+                    logs_topic: rotel_env(pfx + "LOGS_TOPIC"),
+                    format: rotel_env(pfx + "FORMAT"),
+                    compression: rotel_env(pfx + "COMPRESSION"),
+                    request_timeout: rotel_env(pfx + "REQUEST_TIMEOUT"),
+                    acks: rotel_env(pfx + "ACKS"),
+                    client_id: rotel_env(pfx + "CLIENT_ID"),
+                    max_message_bytes: as_int(rotel_env(pfx + "MAX_MESSAGE_BYTES")),
+                    linger_ms: as_int(rotel_env(pfx + "LINGER_MS")),
+                    retries: as_int(rotel_env(pfx + "RETRIES")),
+                    retry_backoff_ms: as_int(rotel_env(pfx + "RETRY_BACKOFF_MS")),
+                    retry_backoff_max_ms: as_int(rotel_env(pfx + "RETRY_BACKOFF_MAX_MS")),
+                    message_timeout_ms: as_int(rotel_env(pfx + "MESSAGE_TIMEOUT_MS")),
+                    request_timeout_ms: as_int(rotel_env(pfx + "REQUEST_TIMEOUT_MS")),
+                    batch_size: as_int(rotel_env(pfx + "BATCH_SIZE")),
+                    partitioner: rotel_env(pfx + "REQUEST_TIMEOUT_MS"),
+                    partition_metrics_by_resource_attributes: as_bool(rotel_env(pfx + "PARTITION_METRICS_BY_RESOURCE_ATTRIBUTES")),
+                    partition_logs_by_resource_attributes: as_bool(rotel_env(pfx + "PARTITION_LOGS_BY_RESOURCE_ATTRIBUTES")),
+                    custom_config: rotel_env(pfx + "CUSTOM_CONFIG"),
+                    sasl_username: rotel_env(pfx + "SASL_USERNAME"),
+                    sasl_password: rotel_env(pfx + "SASL_PASSWORD"),
+                    sasl_mechanism: rotel_env(pfx + "SASL_MECHANISM"),
+                    security_protocol: rotel_env(pfx + "SECURITY_PROTOCOL"), 
+                }
             }
         }
 
@@ -257,6 +344,14 @@ export class Config {
     static clickhouse_exporter(config?: Partial<ClickhouseExporter>): ClickhouseExporter {
         return {
             _type: "clickhouse",
+            ...config
+        }
+    }
+    
+    static kafka_exporter(config?: Partial<KafkaExporter>): KafkaExporter {
+        return {
+            _type: "kafka",
+            security_protocol: "plaintext",
             ...config
         }
     } 
@@ -404,6 +499,12 @@ export class Config {
             _set_clickhouse_exporter_agent_env(updates, pfx, c)
             return;
         }
+
+        if (expType == "kafka") {
+            const k: KafkaExporter = exporter as KafkaExporter;
+            _set_kafka_exporter_agent_env(updates, pfx, k)
+            return;
+        }
         
         //
         // Fall through to OTLP exporter
@@ -463,6 +564,9 @@ export class Config {
 function _set_blackhole_exporter_agent_env(updates: Record<string, any>, pfx: string | null, exporter: BlackholeExporter) {
     if (pfx === null) {
         pfx = "BLACKHOLE_EXPORTER_";
+        Object.assign(updates, {
+            "EXPORTER": "blackhole", 
+        });  
     }
     Object.assign(updates, {
         [pfx + "EXPORTER"]: "blackhole", 
@@ -472,6 +576,9 @@ function _set_blackhole_exporter_agent_env(updates: Record<string, any>, pfx: st
 function _set_datadog_exporter_agent_env(updates: Record<string, any>, pfx: string | null, exporter: DatadogExporter) {
     if (pfx === null) {
         pfx = "DATADOG_EXPORTER_";
+        Object.assign(updates, {
+            "EXPORTER": "clickhouse", 
+        });  
     }
     Object.assign(updates, {
         [pfx + "EXPORTER"]: "datadog", 
@@ -484,9 +591,9 @@ function _set_datadog_exporter_agent_env(updates: Record<string, any>, pfx: stri
 function _set_clickhouse_exporter_agent_env(updates: Record<string, any>, pfx: string | null, exporter: ClickhouseExporter) {
     if (pfx === null) {
         pfx = "CLICKHOUSE_EXPORTER_"
-        updates.update({
+        Object.assign(updates, {
             "EXPORTER": "clickhouse", 
-        })
+        });
     }
 
     Object.assign(updates, {
@@ -498,6 +605,43 @@ function _set_clickhouse_exporter_agent_env(updates: Record<string, any>, pfx: s
         [pfx + "USER"]: exporter.user,
         [pfx + "PASSWORD"]: exporter.password,
         [pfx + "ENABLE_JSON"]: exporter.enable_json,
+    })
+}
+
+function _set_kafka_exporter_agent_env(updates: Record<string, any>, pfx: string | null, exporter: KafkaExporter) {
+    if (pfx === null) {
+        pfx = "KAFKA_EXPORTER_"
+        Object.assign(updates, {
+            "EXPORTER": "kafka", 
+        });
+    }
+
+    Object.assign(updates, {
+        [pfx + "BROKERS"]: exporter.brokers,
+        [pfx + "TRACES_TOPIC"]: exporter.traces_topic,
+        [pfx + "METRICS_TOPIC"]: exporter.metrics_topic,
+        [pfx + "LOGS_TOPIC"]: exporter.logs_topic,
+        [pfx + "FORMAT"]: exporter.format,
+        [pfx + "COMPRESSION"]: exporter.compression,
+        [pfx + "REQUEST_TIMEOUT"]: exporter.request_timeout,
+        [pfx + "ACKS"]: exporter.acks,
+        [pfx + "CLIENT_ID"]: exporter.client_id,
+        [pfx + "MAX_MESSAGE_BYTES"]: exporter.max_message_bytes,
+        [pfx + "LINGER_MS"]: exporter.linger_ms,
+        [pfx + "RETRIES"]: exporter.retries,
+        [pfx + "RETRY_BACKOFF_MS"]: exporter.retry_backoff_ms,
+        [pfx + "RETRY_BACKOFF_MAX_MS"]: exporter.retry_backoff_max_ms,
+        [pfx + "MESSAGE_TIMEOUT_MS"]: exporter.message_timeout_ms,
+        [pfx + "REQUEST_TIMEOUT_MS"]: exporter.request_timeout_ms,
+        [pfx + "BATCH_SIZE"]: exporter.batch_size,
+        [pfx + "PARTITIONER"]: exporter.partitioner,
+        [pfx + "PARTITION_METRICS_BY_RESOURCE_ATTRIBUTES"]: exporter.partition_metrics_by_resource_attributes,
+        [pfx + "PARTITION_LOGS_BY_RESOURCE_ATTRIBUTES"]: exporter.partition_logs_by_resource_attributes,
+        [pfx + "CUSTOM_CONFIG"]: exporter.custom_config,
+        [pfx + "SASL_USERNAME"]: exporter.sasl_username,
+        [pfx + "SASL_PASSWORD"]: exporter.sasl_password,
+        [pfx + "SASL_MECHANISM"]: exporter.sasl_mechanism,
+        [pfx + "SECURITY_PROTOCOL"]: exporter.security_protocol,
     })
 }
 
