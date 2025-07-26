@@ -34,16 +34,22 @@ In the startup section of your `index.js` or `index.ts` add the following code b
 
 ---
 ```javascript
-const { Rotel } = require("@streamfold/rotel");
+const { Rotel,Config } = require("@streamfold/rotel");
+const { Client } require("@streamfold/rotel/client");
 
 const rotel = new Rotel({
   enabled: true,
-  exporter: {
-      endpoint: "https://foo.example.com",
-      headers: {
-          "x-api-key" : "xxxxx",
-      }
-    },
+  exporters: {
+    "otlp" : Config.otlp_exporter({
+        endpoint: "https://foo.example.com",
+        headers: {
+          "x-api-key": "xxxxx",
+        },
+    }),             
+  },
+  exporters_traces: ["otlp"],
+│ exporters_metrics: ["otlp"],
+│ exporters_logs: ["otlp"],
 })
 rotel.start()
 ```
@@ -58,8 +64,12 @@ new Rotel().start();
 
 In your application deployment configuration, set the following environment variables. These match the typed configuration above:
 * `ROTEL_ENABLED=true`
-* `ROTEL_OTLP_EXPORTER_ENDPOINT=https://foo.example.com`
-* `ROTEL_OTLP_EXPORTER_CUSTOM_HEADERS=x-api-key={API_KEY}`
+* `ROTEL_EXPORTERS=otlp`
+* `ROTEL_EXPORTER_OTLP_ENDPOINT=https://foo.example.com`
+* `ROTEL_EXPORTER_OTLP_CUSTOM_HEADERS=x-api-key={API_KEY}`
+* `ROTEL_EXPORTERS_TRACES=otlp`
+* `ROTEL_EXPORTERS_METRICS=otlp`
+* `ROTEL_EXPORTERS_LOGS=otlp`
 
 Any typed configuration options will override environment variables of the same name.
 
@@ -77,7 +87,7 @@ To set the endpoint the OpenTelemetry SDK will use, set the following environmen
 
 ## Configuration
 
-This is the full list of options and their environment variable alternatives. Any defaults left blank in the table are either False or None.
+This is the full list of options and their environment variable alternatives. Any defaults left blank in the table are either False or None. 
 
 | Option Name                    | Type         | Environ                              | Default              | Options         |
 |--------------------------------|--------------|--------------------------------------|----------------------|-----------------|
@@ -93,7 +103,7 @@ This is the full list of options and their environment variable alternatives. An
 | otlp_receiver_logs_disabled    | boolean      | ROTEL_OTLP_RECEIVER_LOGS_DISABLED    |                      |                 |
 | exporter                       | OTLPExporter |                                      |                      |                 |
 
-The OTLPExporter can be enabled with the following options.
+The OTLPExporter can be enabled with the following options. To construct an OTLP exporter, use the method `Config.otlp_exporter()` with the following options.
 
 | Option Name            | Type                   | Environ                                    | Default | Options      |
 |------------------------|------------------------|--------------------------------------------|---------|--------------|
