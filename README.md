@@ -101,9 +101,16 @@ This is the full list of options and their environment variable alternatives. An
 | otlp_receiver_traces_disabled  | boolean      | ROTEL_OTLP_RECEIVER_TRACES_DISABLED  |                      |                 |
 | otlp_receiver_metrics_disabled | boolean      | ROTEL_OTLP_RECEIVER_METRICS_DISABLED |                      |                 |
 | otlp_receiver_logs_disabled    | boolean      | ROTEL_OTLP_RECEIVER_LOGS_DISABLED    |                      |                 |
-| exporter                       | OTLPExporter |                                      |                      |                 |
+| exporters                      | Map<string, Exporter> |                                      |                      |                 |
+| exporters_traces               | string[]              | ROTEL_EXPORTERS_TRACES               |                      |                 |
+| exporters_metrics              | string[]              | ROTEL_EXPORTERS_METRICS              |                      |                 |
+| exporters_logs                 | string[]              | ROTEL_EXPORTERS_LOGS                 |                      |                 |
 
-The OTLPExporter can be enabled with the following options. To construct an OTLP exporter, use the method `Config.otlp_exporter()` with the following options.
+For each exporter you would like to use, see the configuration options below. Exporters should be assigned to the `exporters` object with a custom name.
+
+### OTLP Exporter
+
+To construct an OTLP exporter, use the method `Config.otlp_exporter()` with the following options.
 
 | Option Name            | Type                   | Environ                                    | Default | Options      |
 |------------------------|------------------------|--------------------------------------------|---------|--------------|
@@ -122,27 +129,122 @@ The OTLPExporter can be enabled with the following options. To construct an OTLP
 | tls_ca_file            | string                 | ROTEL_OTLP_EXPORTER_TLS_CA_FILE            |         |              |
 | tls_skip_verify        | boolean                | ROTEL_OTLP_EXPORTER_TLS_SKIP_VERIFY        |         |              |
 
+### Datadog Exporter
+
+Rotel provides an experimental [Datadog exporter](https://github.com/streamfold/rotel/blob/main/src/exporters/datadog/README.md) that supports traces at the moment. Construct a Datadog exporter with the method `Config.datadog_exporter()` using the following options.
+
+| Option Name            | Type                   | Environ                                    | Default | Options                |
+|------------------------|------------------------|--------------------------------------------|---------|------------------------|
+| region                 | string                 | ROTEL_DATADOG_EXPORTER_REGION              | us1     | us1, us3, us5, eu, ap1 |
+| custom_endpoint        | string                 | ROTEL_DATADOG_EXPORTER_CUSTOM_ENDPOINT     |         |                        |
+| api_key                | string                 | ROTEL_DATADOG_EXPORTER_API_KEY             |         |                        |
+
+### ClickHouse Exporter
+
+Rotel provides a ClickHouse exporter with support for metrics, logs, and traces. Construct a ClickHouse exporter with the method `Config.clickhouse_exporter()` using the following options.
+
+| Option Name            | Type                   | Environ                                    | Default | Options |
+|------------------------|------------------------|--------------------------------------------|---------|---------|
+| endpoint               | string                 | ROTEL_CLICKHOUSE_EXPORTER_ENDPOINT         |         |         |
+| database               | string                 | ROTEL_CLICKHOUSE_EXPORTER_DATABASE         | otel    |         |
+| table_prefix           | string                 | ROTEL_CLICKHOUSE_EXPORTER_TABLE_PREFIX     | otel    |         |
+| compression            | string                 | ROTEL_CLICKHOUSE_EXPORTER_COMPRESSION      | lz4     |         |
+| async_insert           | boolean                | ROTEL_CLICKHOUSE_EXPORTER_ASYNC_INSERT     | true    |         |
+| user                   | string                 | ROTEL_CLICKHOUSE_EXPORTER_USER             |         |         |
+| password               | string                 | ROTEL_CLICKHOUSE_EXPORTER_PASSWORD         |         |         |
+| enable_json            | boolean                | ROTEL_CLICKHOUSE_EXPORTER_ENABLE_JSON      |         |         |
+| json_underscore        | boolean                | ROTEL_CLICKHOUSE_EXPORTER_JSON_UNDERSCORE  |         |         |
+
+### Kafka Exporter
+
+Rotel provides a Kafka exporter with support for metrics, logs, and traces. Construct a Kafka exporter with the method `Config.kafka_exporter()` using the following options.
+
+| Option Name                                | Type     | Environ                                                      | Default           | Options                                                                      |
+|--------------------------------------------|----------|--------------------------------------------------------------|-------------------|------------------------------------------------------------------------------|
+| brokers                                    | string[] | ROTEL_KAFKA_EXPORTER_BROKERS                                 | localhost:9092    |                                                                              |
+| traces_topic                               | string   | ROTEL_KAFKA_EXPORTER_TRACES_TOPIC                            | otlp_traces       |                                                                              |
+| logs_topic                                 | string   | ROTEL_KAFKA_EXPORTER_LOGS_TOPIC                              | otlp_logs         |                                                                              |
+| metrics_topic                              | string   | ROTEL_KAFKA_EXPORTER_METRICS_TOPIC                           | otlp_metrics      |                                                                              |
+| format                                     | string   | ROTEL_KAFKA_EXPORTER_FORMAT                                  | protobuf          | json, protobuf                                                               |
+| compression                                | string   | ROTEL_KAFKA_EXPORTER_COMPRESSION                             | none              | gzip, snappy, lz4, zstd, none                                                |
+| acks                                       | string   | ROTEL_KAFKA_EXPORTER_ACKS                                    | one               | all, one, none                                                               |
+| client_id                                  | string   | ROTEL_KAFKA_EXPORTER_CLIENT_ID                               | rotel             |                                                                              |
+| max_message_bytes                          | number   | ROTEL_KAFKA_EXPORTER_MAX_MESSAGE_BYTES                       | 1000000           |                                                                              |
+| linger_ms                                  | number   | ROTEL_KAFKA_EXPORTER_LINGER_MS                               | 5                 |                                                                              |
+| retries                                    | number   | ROTEL_KAFKA_EXPORTER_RETRIES                                 | 2147483647        |                                                                              |
+| retry_backoff_ms                           | number   | ROTEL_KAFKA_EXPORTER_RETRY_BACKOFF_MS                        | 100               |                                                                              |
+| retry_backoff_max_ms                       | number   | ROTEL_KAFKA_EXPORTER_RETRY_BACKOFF_MAX_MS                    | 1000              |                                                                              |
+| message_timeout_ms                         | number   | ROTEL_KAFKA_EXPORTER_MESSAGE_TIMEOUT_MS                      | 300000            |                                                                              |
+| request_timeout_ms                         | number   | ROTEL_KAFKA_EXPORTER_REQUEST_TIMEOUT_MS                      | 30000             |                                                                              |
+| batch_size                                 | number   | ROTEL_KAFKA_EXPORTER_BATCH_SIZE                              | 1000000           |                                                                              |
+| partitioner                                | string   | ROTEL_KAFKA_EXPORTER_PARTITIONER                             | consistent-random | consistent, consistent-random, murmur2-random, murmur2, fnv1a, fnv1a-random |
+| partition_metrics_by_resource_attributes   | boolean  | ROTEL_KAFKA_EXPORTER_PARTITION_METRICS_BY_RESOURCE_ATTRIBUTES   |                   |                                                                              |
+| partition_logs_by_resource_attributes      | boolean  | ROTEL_KAFKA_EXPORTER_PARTITION_LOGS_BY_RESOURCE_ATTRIBUTES      |                   |                                                                              |
+| custom_config                              | string   | ROTEL_KAFKA_EXPORTER_CUSTOM_CONFIG                           |                   |                                                                              |
+| sasl_username                              | string   | ROTEL_KAFKA_EXPORTER_SASL_USERNAME                           |                   |                                                                              |
+| sasl_password                              | string   | ROTEL_KAFKA_EXPORTER_SASL_PASSWORD                           |                   |                                                                              |
+| sasl_mechanism                             | string   | ROTEL_KAFKA_EXPORTER_SASL_MECHANISM                          |                   |                                                                              |
+| security_protocol                          | string   | ROTEL_KAFKA_EXPORTER_SECURITY_PROTOCOL                       | PLAINTEXT         | PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL                                     |
+
+### Blackhole Exporter
+
+The Blackhole exporter is useful for testing purposes. It accepts telemetry data but does not forward it anywhere. Construct a Blackhole exporter with the method `Config.blackhole_exporter()`. This exporter has no configuration options.
+
+### Multiple Exporters
+
+Rotel supports [multiple exporters](https://rotel.dev/docs/configuration/multiple-exporters), allowing you to send data to different destinations per telemetry type. Just set the `exporters` entry to an object of exporter definitions and then configure the exporters per telemetry type. For example, this will send metrics and logs to an OTLP endpoint while sending traces to Datadog:
+
+```javascript
+const { Rotel, Config } = require("@streamfold/rotel");
+
+const rotel = new Rotel({
+  enabled: true,
+  exporters: {
+    "logs_and_metrics": Config.otlp_exporter({
+      endpoint: "https://foo.example.com",
+      headers: {
+        "x-api-key": process.env.API_KEY,
+        "x-data-set": "testing"
+      }
+    }),
+    "tracing": Config.datadog_exporter({
+      api_key: "1234abcd",
+    }),
+  },
+  // Define exporters per telemetry type
+  exporters_traces: ["tracing"],
+  exporters_metrics: ["logs_and_metrics"],
+  exporters_logs: ["logs_and_metrics"]
+});
+rotel.start();
+```
+
 ### Endpoint overrides
 
 When using the OTLP exporter over HTTP, the exporter will append `/v1/traces`, `/v1/metrics`, or `/v1/logs` to the endpoint URL for traces, metrics, and logs respectively. If the service you are exporting telemetry data to does not support these standard URL paths, you can individually override them for traces, metrics, and logs.
 
 For example, to override the endpoint for traces and metrics you can do the following:
 ```javascript
-const { Rotel } = require("@streamfold/rotel");
+const { Rotel, Config } = require("@streamfold/rotel");
 
 const rotel = new Rotel({
   enabled: true,
-  exporter: {
+  exporters: {
+    "otlp": Config.otlp_exporter({
       headers: {
-          "x-api-key" : "xxxxx",
+        "x-api-key": "xxxxx",
       },
       traces: {
         endpoint: "http://foo.example.com:4318/api/otlp/traces",
       },
       metrics: {
-            endpoint = "http://foo.example.com:4318/api/otlp/metrics",
+        endpoint: "http://foo.example.com:4318/api/otlp/metrics",
       }
+    })
   },
+  exporters_traces: ["otlp"],
+  exporters_metrics: ["otlp"],
+  exporters_logs: ["otlp"]
 });
 rotel.start();
 ```
@@ -179,7 +281,7 @@ The code sample depends on the following environment variables:
 * `AXIOM_API_TOKEN`: Set to an API token that has access to the Axiom dataset
 
 ```javascript
-const { Rotel } = require("@streamfold/rotel");
+const { Rotel, Config } = require("@streamfold/rotel");
 
 const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc');
@@ -191,14 +293,19 @@ const { resourceFromAttributes } = require('@opentelemetry/resources');
 function initRotel() {
   const rotel = new Rotel({
     enabled: true,
-    exporter: {
-      endpoint: "https://api.axiom.co",
-      protocol: "http",
-      headers: {
-        "Authorization": "Bearer " + process.env.AXIOM_API_TOKEN,
-        "X-Axiom-Dataset": process.env.AXIOM_DATASET
-      }
+    exporters: {
+      "axiom": Config.otlp_exporter({
+        endpoint: "https://api.axiom.co",
+        protocol: "http",
+        headers: {
+          "Authorization": "Bearer " + process.env.AXIOM_API_TOKEN,
+          "X-Axiom-Dataset": process.env.AXIOM_DATASET
+        }
+      })
     },
+    exporters_traces: ["axiom"],
+    exporters_metrics: ["axiom"],
+    exporters_logs: ["axiom"]
   })
   return rotel;
 }
