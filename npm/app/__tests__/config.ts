@@ -51,7 +51,7 @@ describe('configuration and validation', () => {
         process.env.ROTEL_OTLP_EXPORTER_TLS_KEY_FILE = "key.file";
         process.env.ROTEL_OTLP_EXPORTER_TLS_CA_FILE = "ca.file";
         process.env.ROTEL_OTLP_EXPORTER_TLS_SKIP_VERIFY = "true";
-        let c = Config._load_otlp_exporter_options_from_env(null);
+        let c = Config._load_otlp_exporter_options_from_env("OTLP_EXPORTER_", null);
         expect(c?.endpoint).toBe("https://api.foo.com");
         expect(c?.protocol).toBe("http");
         expect(c?.headers).toStrictEqual({"[x-api-key": "123]"})
@@ -69,7 +69,7 @@ describe('configuration and validation', () => {
     });
 
     it('fails validation', () => {
-        
+        process.env.ROTEL_ENABLED = "true";
         const c1 = new Config();
         c1.options.exporter = {protocol: "X.500"};
         expect(c1.validate()).toBe(false)
@@ -79,3 +79,5 @@ describe('configuration and validation', () => {
         expect(c2.validate()).toBe(false)
     });
 });
+
+
