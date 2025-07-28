@@ -48,8 +48,8 @@ const rotel = new Rotel({
     }),             
   },
   exporters_traces: ["otlp"],
-│ exporters_metrics: ["otlp"],
-│ exporters_logs: ["otlp"],
+  exporters_metrics: ["otlp"],
+  exporters_logs: ["otlp"],
 })
 rotel.start()
 ```
