@@ -112,79 +112,79 @@ For each exporter you would like to use, see the configuration options below. Ex
 
 To construct an OTLP exporter, use the method `Config.otlp_exporter()` with the following options.
 
-| Option Name            | Type                   | Environ                                    | Default | Options      |
-|------------------------|------------------------|--------------------------------------------|---------|--------------|
-| endpoint               | string                 | ROTEL_OTLP_EXPORTER_ENDPOINT               |         |              |
-| protocol               | string                 | ROTEL_OTLP_EXPORTER_PROTOCOL               | grpc    | grpc or http |
-| headers                | Map<string, string>    | ROTEL_OTLP_EXPORTER_CUSTOM_HEADERS         |         |              |
-| compression            | string                 | ROTEL_OTLP_EXPORTER_COMPRESSION            | gzip    | gzip or none |
-| request_timeout        | string                 | ROTEL_OTLP_EXPORTER_REQUEST_TIMEOUT        | 5s      |              |
-| retry_initial_backoff  | string                 | ROTEL_OTLP_EXPORTER_RETRY_INITIAL_BACKOFF  | 5s      |              |
-| retry_max_backoff      | string                 | ROTEL_OTLP_EXPORTER_RETRY_MAX_BACKOFF      | 30s     |              |
-| retry_max_elapsed_time | string                 | ROTEL_OTLP_EXPORTER_RETRY_MAX_ELAPSED_TIME | 300s    |              |
-| batch_max_size         | number                 | ROTEL_OTLP_EXPORTER_BATCH_MAX_SIZE         | 8192    |              |
-| batch_timeout          | string                 | ROTEL_OTLP_EXPORTER_BATCH_TIMEOUT          | 200ms   |              |
-| tls_cert_file          | string                 | ROTEL_OTLP_EXPORTER_TLS_CERT_FILE          |         |              |
-| tls_key_file           | string                 | ROTEL_OTLP_EXPORTER_TLS_KEY_FILE           |         |              |
-| tls_ca_file            | string                 | ROTEL_OTLP_EXPORTER_TLS_CA_FILE            |         |              |
-| tls_skip_verify        | boolean                | ROTEL_OTLP_EXPORTER_TLS_SKIP_VERIFY        |         |              |
+| Option Name            | Type                   | Default | Options      |
+|------------------------|------------------------|---------|--------------|
+| endpoint               | string                 |         |              |
+| protocol               | string                 | grpc    | grpc or http |
+| headers                | Map<string, string>    |         |              |
+| compression            | string                 | gzip    | gzip or none |
+| request_timeout        | string                 | 5s      |              |
+| retry_initial_backoff  | string                 | 5s      |              |
+| retry_max_backoff      | string                 | 30s     |              |
+| retry_max_elapsed_time | string                 | 300s    |              |
+| batch_max_size         | number                 | 8192    |              |
+| batch_timeout          | string                 | 200ms   |              |
+| tls_cert_file          | string                 |         |              |
+| tls_key_file           | string                 |         |              |
+| tls_ca_file            | string                 |         |              |
+| tls_skip_verify        | boolean                |         |              |
 
 ### Datadog Exporter
 
 Rotel provides an experimental [Datadog exporter](https://github.com/streamfold/rotel/blob/main/src/exporters/datadog/README.md) that supports traces at the moment. Construct a Datadog exporter with the method `Config.datadog_exporter()` using the following options.
 
-| Option Name            | Type                   | Environ                                    | Default | Options                |
-|------------------------|------------------------|--------------------------------------------|---------|------------------------|
-| region                 | string                 | ROTEL_DATADOG_EXPORTER_REGION              | us1     | us1, us3, us5, eu, ap1 |
-| custom_endpoint        | string                 | ROTEL_DATADOG_EXPORTER_CUSTOM_ENDPOINT     |         |                        |
-| api_key                | string                 | ROTEL_DATADOG_EXPORTER_API_KEY             |         |                        |
+| Option Name            | Type                   | Default | Options                |
+|------------------------|------------------------|---------|------------------------|
+| region                 | string                 | us1     | us1, us3, us5, eu, ap1 |
+| custom_endpoint        | string                 |         |                        |
+| api_key                | string                 |         |                        |
 
 ### ClickHouse Exporter
 
 Rotel provides a ClickHouse exporter with support for metrics, logs, and traces. Construct a ClickHouse exporter with the method `Config.clickhouse_exporter()` using the following options.
 
-| Option Name            | Type                   | Environ                                    | Default | Options |
-|------------------------|------------------------|--------------------------------------------|---------|---------|
-| endpoint               | string                 | ROTEL_CLICKHOUSE_EXPORTER_ENDPOINT         |         |         |
-| database               | string                 | ROTEL_CLICKHOUSE_EXPORTER_DATABASE         | otel    |         |
-| table_prefix           | string                 | ROTEL_CLICKHOUSE_EXPORTER_TABLE_PREFIX     | otel    |         |
-| compression            | string                 | ROTEL_CLICKHOUSE_EXPORTER_COMPRESSION      | lz4     |         |
-| async_insert           | boolean                | ROTEL_CLICKHOUSE_EXPORTER_ASYNC_INSERT     | true    |         |
-| user                   | string                 | ROTEL_CLICKHOUSE_EXPORTER_USER             |         |         |
-| password               | string                 | ROTEL_CLICKHOUSE_EXPORTER_PASSWORD         |         |         |
-| enable_json            | boolean                | ROTEL_CLICKHOUSE_EXPORTER_ENABLE_JSON      |         |         |
-| json_underscore        | boolean                | ROTEL_CLICKHOUSE_EXPORTER_JSON_UNDERSCORE  |         |         |
+| Option Name            | Type                   | Default | Options |
+|------------------------|------------------------|---------|---------|
+| endpoint               | string                 |         |         |
+| database               | string                 | otel    |         |
+| table_prefix           | string                 | otel    |         |
+| compression            | string                 | lz4     |         |
+| async_insert           | boolean                | true    |         |
+| user                   | string                 |         |         |
+| password               | string                 |         |         |
+| enable_json            | boolean                |         |         |
+| json_underscore        | boolean                |         |         |
 
 ### Kafka Exporter
 
 Rotel provides a Kafka exporter with support for metrics, logs, and traces. Construct a Kafka exporter with the method `Config.kafka_exporter()` using the following options.
 
-| Option Name                                | Type     | Environ                                                      | Default           | Options                                                                      |
-|--------------------------------------------|----------|--------------------------------------------------------------|-------------------|------------------------------------------------------------------------------|
-| brokers                                    | string[] | ROTEL_KAFKA_EXPORTER_BROKERS                                 | localhost:9092    |                                                                              |
-| traces_topic                               | string   | ROTEL_KAFKA_EXPORTER_TRACES_TOPIC                            | otlp_traces       |                                                                              |
-| logs_topic                                 | string   | ROTEL_KAFKA_EXPORTER_LOGS_TOPIC                              | otlp_logs         |                                                                              |
-| metrics_topic                              | string   | ROTEL_KAFKA_EXPORTER_METRICS_TOPIC                           | otlp_metrics      |                                                                              |
-| format                                     | string   | ROTEL_KAFKA_EXPORTER_FORMAT                                  | protobuf          | json, protobuf                                                               |
-| compression                                | string   | ROTEL_KAFKA_EXPORTER_COMPRESSION                             | none              | gzip, snappy, lz4, zstd, none                                                |
-| acks                                       | string   | ROTEL_KAFKA_EXPORTER_ACKS                                    | one               | all, one, none                                                               |
-| client_id                                  | string   | ROTEL_KAFKA_EXPORTER_CLIENT_ID                               | rotel             |                                                                              |
-| max_message_bytes                          | number   | ROTEL_KAFKA_EXPORTER_MAX_MESSAGE_BYTES                       | 1000000           |                                                                              |
-| linger_ms                                  | number   | ROTEL_KAFKA_EXPORTER_LINGER_MS                               | 5                 |                                                                              |
-| retries                                    | number   | ROTEL_KAFKA_EXPORTER_RETRIES                                 | 2147483647        |                                                                              |
-| retry_backoff_ms                           | number   | ROTEL_KAFKA_EXPORTER_RETRY_BACKOFF_MS                        | 100               |                                                                              |
-| retry_backoff_max_ms                       | number   | ROTEL_KAFKA_EXPORTER_RETRY_BACKOFF_MAX_MS                    | 1000              |                                                                              |
-| message_timeout_ms                         | number   | ROTEL_KAFKA_EXPORTER_MESSAGE_TIMEOUT_MS                      | 300000            |                                                                              |
-| request_timeout_ms                         | number   | ROTEL_KAFKA_EXPORTER_REQUEST_TIMEOUT_MS                      | 30000             |                                                                              |
-| batch_size                                 | number   | ROTEL_KAFKA_EXPORTER_BATCH_SIZE                              | 1000000           |                                                                              |
-| partitioner                                | string   | ROTEL_KAFKA_EXPORTER_PARTITIONER                             | consistent-random | consistent, consistent-random, murmur2-random, murmur2, fnv1a, fnv1a-random |
-| partition_metrics_by_resource_attributes   | boolean  | ROTEL_KAFKA_EXPORTER_PARTITION_METRICS_BY_RESOURCE_ATTRIBUTES   |                   |                                                                              |
-| partition_logs_by_resource_attributes      | boolean  | ROTEL_KAFKA_EXPORTER_PARTITION_LOGS_BY_RESOURCE_ATTRIBUTES      |                   |                                                                              |
-| custom_config                              | string   | ROTEL_KAFKA_EXPORTER_CUSTOM_CONFIG                           |                   |                                                                              |
-| sasl_username                              | string   | ROTEL_KAFKA_EXPORTER_SASL_USERNAME                           |                   |                                                                              |
-| sasl_password                              | string   | ROTEL_KAFKA_EXPORTER_SASL_PASSWORD                           |                   |                                                                              |
-| sasl_mechanism                             | string   | ROTEL_KAFKA_EXPORTER_SASL_MECHANISM                          |                   |                                                                              |
-| security_protocol                          | string   | ROTEL_KAFKA_EXPORTER_SECURITY_PROTOCOL                       | PLAINTEXT         | PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL                                     |
+| Option Name                                | Type     | Default           | Options                                                                      |
+|--------------------------------------------|----------|-------------------|------------------------------------------------------------------------------|
+| brokers                                    | string[] | localhost:9092    |                                                                              |
+| traces_topic                               | string   | otlp_traces       |                                                                              |
+| logs_topic                                 | string   | otlp_logs         |                                                                              |
+| metrics_topic                              | string   | otlp_metrics      |                                                                              |
+| format                                     | string   | protobuf          | json, protobuf                                                               |
+| compression                                | string   | none              | gzip, snappy, lz4, zstd, none                                                |
+| acks                                       | string   | one               | all, one, none                                                               |
+| client_id                                  | string   | rotel             |                                                                              |
+| max_message_bytes                          | number   | 1000000           |                                                                              |
+| linger_ms                                  | number   | 5                 |                                                                              |
+| retries                                    | number   | 2147483647        |                                                                              |
+| retry_backoff_ms                           | number   | 100               |                                                                              |
+| retry_backoff_max_ms                       | number   | 1000              |                                                                              |
+| message_timeout_ms                         | number   | 300000            |                                                                              |
+| request_timeout_ms                         | number   | 30000             |                                                                              |
+| batch_size                                 | number   | 1000000           |                                                                              |
+| partitioner                                | string   | consistent-random | consistent, consistent-random, murmur2-random, murmur2, fnv1a, fnv1a-random |
+| partition_metrics_by_resource_attributes   | boolean  |                   |                                                                              |
+| partition_logs_by_resource_attributes      | boolean  |                   |                                                                              |
+| custom_config                              | string   |                   |                                                                              |
+| sasl_username                              | string   |                   |                                                                              |
+| sasl_password                              | string   |                   |                                                                              |
+| sasl_mechanism                             | string   |                   |                                                                              |
+| security_protocol                          | string   | PLAINTEXT         | PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL                                     |
 
 ### Blackhole Exporter
 
