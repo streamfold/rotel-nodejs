@@ -50,6 +50,7 @@ export interface ClickhouseExporter {
     user?: string
     password?: string
     enable_json?: boolean
+    json_underscore?: boolean
 }
 
 export interface KafkaExporter {
@@ -186,6 +187,7 @@ export class Config {
                             user: rotel_env(pfx + "USER"),
                             password: rotel_env(pfx + "PASSWORD"),
                             enable_json: as_bool(rotel_env(pfx + "ENABLE_JSON")),
+                            json_underscore: as_bool(rotel_env(pfx + "JSON_UNDERSCORE")),
                         }
                         exporter = clickhouseExporter;
                     case "kafka": 
@@ -275,6 +277,7 @@ export class Config {
                     user: rotel_env(pfx + "USER"),
                     password: rotel_env(pfx + "PASSWORD"),
                     enable_json: as_bool(rotel_env(pfx + "ENABLE_JSON")),
+                    json_underscore: as_bool(rotel_env(pfx + "JSON_UNDERSCORE")),
                 }
                 env.exporter = c;
             } else if(exporter_type === "kafka") {
@@ -605,6 +608,7 @@ function _set_clickhouse_exporter_agent_env(updates: Record<string, any>, pfx: s
         [pfx + "USER"]: exporter.user,
         [pfx + "PASSWORD"]: exporter.password,
         [pfx + "ENABLE_JSON"]: exporter.enable_json,
+        [pfx + "JSON_UNDERSCORE"]: exporter.json_underscore,
     })
 }
 
