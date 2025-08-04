@@ -1,5 +1,5 @@
 # rotel 🌶️ 🍅
-Node.js package for the [Rotel](https://github.com/streamfold/rotel).
+Node.js package for [Rotel](https://github.com/streamfold/rotel).
 
 [![npm version](https://badge.fury.io/js/@streamfold%2Frotel.svg)](https://badge.fury.io/js/@streamfold%2Frotel)
 ## Description
