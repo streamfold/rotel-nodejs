@@ -1,10 +1,10 @@
 # rotel 🌶️ 🍅
-Node.js package for the Rotel lightweight OpenTelemetry collector.
+Node.js package for the [Rotel](https://github.com/streamfold/rotel).
 
 [![npm version](https://badge.fury.io/js/@streamfold%2Frotel.svg)](https://badge.fury.io/js/@streamfold%2Frotel)
 ## Description
 
-This package provides an embedded OpenTelemetry collector, built on the lightweight Rotel collector. When started, it spawns a background daemon that accepts OpenTelemetry metrics, traces, and logs. Designed for minimal overhead, Rotel reduces resource consumption while simplifying telemetry collection and processing in Node.js applications—without requiring additional sidecar containers.
+This package provides an embedded lightweight agent that can collect OpenTelemetry data, built on [Rotel](https://github.com/streamfold/rotel). When started, it spawns a background daemon that accepts OpenTelemetry metrics, traces, and logs. Designed for minimal overhead, Rotel reduces resource consumption while simplifying telemetry collection and processing in Node.js applications—without requiring additional sidecar containers.
 
 | Telemetry Type | Support     |
 |----------------|-------------|
@@ -79,7 +79,7 @@ See the [*Configuration*](#configuration) section for the full list of options.
 
 ### OpenTelemetry SDK configuration
 
-Once the rotel collector agent is running, you may need to configure your application's instrumentation. If you are using the default rotel endpoints of *localhost:4317* and *localhost:4318*, then you should not need to change anything. 
+Once the Rotel agent is running, you may need to configure your application's instrumentation. If you are using the default rotel endpoints of *localhost:4317* and *localhost:4318*, then you should not need to change anything. 
 
 To set the endpoint the OpenTelemetry SDK will use, set the following environment variable:
 
@@ -312,7 +312,7 @@ function initRotel() {
 
 function initOtel() {
   const exporter = new OTLPTraceExporter({                                                                                                                   
-    url: 'http://127.0.0.1:4317', // points to out local rotel collector                                                                                                                    
+    url: 'http://127.0.0.1:4317', // points to out local Rotel                                                                                                                    
   });                                                                                                                                                  
                                                                                                                                                      
   // Initialize the tracer provider                                                                                                                    
